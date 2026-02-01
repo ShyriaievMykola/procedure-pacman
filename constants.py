@@ -1,0 +1,2 @@
+WALL = 1
+TUNNEL = 0
