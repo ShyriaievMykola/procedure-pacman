@@ -1,18 +1,22 @@
 from collections import deque
+import random
+
 from constants import *
+from map.game_map import GameMap
+from seeded_random import SeededRandom
 
 MOCK_MAP_DATA = True
 
 
+
 class MapGenerator:
 
-    def __init__(self, width, height, srand):
+    def __init__(self, width, height, seed=None):
         self.width = width
         self.height = height
-        self.srand = srand
 
-        self.grid = [[WALL for _ in range(width)] for _ in range(height)]
-        self.untouchable_zones = [[False for _ in range(width)] for _ in range(height)]
+        self.grid = None
+        self.untouchable_zones = None
 
         self.ghost_x = None
         self.ghost_y = None
@@ -21,14 +25,32 @@ class MapGenerator:
         self.passage_left = None
         self.passage_right = None
 
+        self.srand = None
+        self.seed = None
+        self.generate_seeded_random(seed)
+        
+        
     # Заглушка перед створенням генерації карти
     def generate_map(self):
+
+        if self.grid is None:
+            self.reset_map()
+
         if MOCK_MAP_DATA:
             self.grid = self.mock_map_data()
-            return
         
-        self.carve_ghost_room()
-        self.carve_passages()
+        else:
+            self.carve_ghost_room()
+            self.carve_passages()
+
+        return GameMap(
+            grid=self.grid,
+            ghost_x=self.ghost_x,
+            ghost_y=self.ghost_y,
+            ghost_door=self.ghost_door,
+            passage_left=self.passage_left,
+            passage_right=self.passage_right
+        )
 
     # Вирізати будинок привидів у центрі карти
     def carve_ghost_room(self):
@@ -44,8 +66,6 @@ class MapGenerator:
         for y in range(start_y, start_y + GHOST_HOUSE_HEIGHT):
             for x in range(start_x, start_x + GHOST_HOUSE_WIDTH):
                 self.grid[y][x] = TUNNEL
-
-        
 
 
         # вирізати тунелі навколо будинку привидів
@@ -154,22 +174,21 @@ class MapGenerator:
             [1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ]
-    
-    # Друк карти в консоль
-    def print_grid(self):
-        for y in range(self.height):
-            row = ""
-            for x in range(self.width):
-                if (self.ghost_x[0] <= x <= self.ghost_x[1] and self.ghost_y[0] <= y <= self.ghost_y[1]):
-                    row += "G"
-                elif (x, y) == self.ghost_door:
-                    row += "D"
-                elif (x, y) == self.passage_left:
-                    row += "L"
-                elif (x, y) == self.passage_right:
-                    row += "R"
-                elif self.grid[y][x] == WALL:
-                    row += "#"
-                else:
-                    row += "."
-            print(row)
+
+    # скидання карти
+    def reset_map(self):
+        self.grid = [[WALL for _ in range(self.width)] for _ in range(self.height)]
+        self.untouchable_zones = [[False for _ in range(self.width)] for _ in range(self.height)]
+        self.ghost_x = None
+        self.ghost_y = None
+        self.ghost_door = None
+        self.passage_left = None
+        self.passage_right = None
+
+    def generate_seeded_random(self, seed=None):
+        if seed is not None:
+            self.seed = seed
+            self.srand = SeededRandom(seed)
+        else:
+            self.seed = random.randint(0, 100000)
+            self.srand = SeededRandom(self.seed)
