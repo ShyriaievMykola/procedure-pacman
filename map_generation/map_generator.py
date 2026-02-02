@@ -33,8 +33,8 @@ class MapGenerator:
             [1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1],
             [1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
             [1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1],
-            [1, 1, 1, 0, 1, 1, 1, 0, 1, 3, 3, 3, 1, 0, 1, 0, 0, 0, 1, 1, 1],
-            [0, 0, 0, 0, 0, 0, 1, 0, 1, 3, 3, 3, 1, 0, 0, 0, 1, 0, 0, 0, 0],
+            [1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
             [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1],
             [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1],
@@ -54,26 +54,15 @@ class MapGenerator:
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ]
     
-    def print_grid(self):
-        for row in self.grid:
-            for cell in row:
-                if cell == WALL:
-                    print("█", end="")
+    def print_grid(self, pacman_position=None):
+        for y, row in enumerate(self.grid):
+            for x, cell in enumerate(row):
+                if pacman_position is not None and (x, y) == pacman_position:
+                    print(" ● ", end="")
+                elif cell == WALL:
+                    print("███", end="")
                 elif cell == EMPTY:
-                    print(" ", end="")
-                elif cell == PACMAN:
-                    print("●", end="")
-                elif cell == PELLET:
-                    print("·", end="")
-                elif cell == GHOST_HOUSE:
-                    print("#", end="")
+                    print("   ", end="")
                 else:
-                    print("?", end="")
+                    print(" ? ", end="")
             print()
-
-    def fill_with_pellets(self):
-        # Заповнює всі тунелі таблетками
-        for y in range(self.height):
-            for x in range(self.width):
-                if self.grid[y][x] == EMPTY:
-                    self.grid[y][x] = PELLET

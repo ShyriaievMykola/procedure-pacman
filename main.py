@@ -18,17 +18,14 @@ def main():
     srand = SeededRandom(seed=random.randint(0, 100000))
     generator = MapGenerator(grid_width, grid_height, srand=srand)
     generator.generate_map()
-    generator.fill_with_pellets()
     pacman.position = pacman.get_spawn_position(generator.grid)
     fps = 10
     while True:
         time.sleep(1 / fps)
-        generator.grid[pacman.position[1]][pacman.position[0]] = EMPTY
         pacman.control()
         pacman.resolve_pend(generator.grid)
-        generator.grid[pacman.position[1]][pacman.position[0]] = PACMAN
         os.system('cls')
-        generator.print_grid()
+        generator.print_grid(pacman.position)
         print(f"Points: {pacman.points}")
 
 if __name__ == "__main__":

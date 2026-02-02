@@ -12,7 +12,7 @@ def get_spawn_position(maze : list # 2D Сітка лабіринту
                     ) -> tuple[int, int]: # Повертає координати x, y
     for y, row in enumerate(maze):
         for x, cell in enumerate(row):
-            if cell == EMPTY or cell == PELLET:
+            if cell == EMPTY:
                 return x, y
 
 def resolve_pend(maze : list # 2D Сітка лабіринту
@@ -30,16 +30,6 @@ def resolve_pend(maze : list # 2D Сітка лабіринту
             position = (new_x, new_y)
         else:    # Вдарились в стіну
             pass # Стоїмо на місці
-    grab(maze, position)
-
-def grab(maze : list, # 2D Сітка лабіринту
-        position : tuple[int, int]
-        ) -> int: # Повертає тип тайла, який був взятий
-    x, y = position
-    tile = maze[y][x]
-    if tile == PELLET:
-        eat_pellet(maze, position)
-    return tile
 
 def eat_pellet( maze : list, # 2D Сітка лабіринту
                 position : tuple[int, int] # Точка звідки їмо таблетку
