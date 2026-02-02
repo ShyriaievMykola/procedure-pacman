@@ -44,6 +44,8 @@ class MapGenerator:
             self.carve_passages()
 
         return GameMap(
+            height=self.height,
+            width=self.width,
             grid=self.grid,
             ghost_x=self.ghost_x,
             ghost_y=self.ghost_y,
