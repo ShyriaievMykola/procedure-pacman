@@ -61,7 +61,7 @@ class MapGenerator:
                     print(" ● ", end="")
                 elif cell == WALL:
                     print("███", end="")
-                elif cell == EMPTY:
+                elif cell == TUNNEL:
                     print("   ", end="")
                 else:
                     print(" ? ", end="")

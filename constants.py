@@ -1,2 +1,2 @@
 WALL = 1
-EMPTY = 0
+TUNNEL = 0

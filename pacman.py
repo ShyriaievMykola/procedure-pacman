@@ -12,7 +12,7 @@ def get_spawn_position(maze : list # 2D Сітка лабіринту
                     ) -> tuple[int, int]: # Повертає координати x, y
     for y, row in enumerate(maze):
         for x, cell in enumerate(row):
-            if cell == EMPTY:
+            if cell == TUNNEL:
                 return x, y
 
 def resolve_pend(maze : list # 2D Сітка лабіринту
@@ -36,7 +36,7 @@ def eat_pellet( maze : list, # 2D Сітка лабіринту
                 ):
     global points
     x, y = position
-    maze[y][x] = EMPTY
+    maze[y][x] = TUNNEL
     points += 1
 
 def control():
