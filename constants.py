@@ -1,6 +1,7 @@
+# літерали для представлення типів клітинок карти
 WALL = 1
-EMPTY = 0
-PELLET = 2
-GHOST_HOUSE = 3
-TUNNEL = 4
-PACMAN = 5
+TUNNEL = 0
+
+# розміри будинку привидів
+GHOST_HOUSE_WIDTH = 3
+GHOST_HOUSE_HEIGHT = 2
