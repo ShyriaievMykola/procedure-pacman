@@ -61,16 +61,16 @@ def test_map_visualization():
 
 def test_pacman():
     map = get_map()
-    pacman.position = pacman.get_spawn_position(map.grid)
+    pacman.position = pacman.get_spawn_position(map)
     fps = 10
     while True:
         time.sleep(1 / fps)
         pacman.control()
-        pacman.resolve_pend(map.grid)
+        pacman.resolve_pend(map)
         os.system('cls')
         map.print_grid(pacman.position)
         print(f"Points: {pacman.points}")
 
 if __name__ == "__main__":
-    main()
+    test_pacman()
     input()
