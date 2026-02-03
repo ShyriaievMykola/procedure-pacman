@@ -65,8 +65,7 @@ def test_pacman():
     fps = 10
     while True:
         time.sleep(1 / fps)
-        pacman.control()
-        pacman.resolve_pend(map)
+        pacman.update(map)
         os.system('cls')
         map.print_grid(pacman.position)
         print(f"Points: {pacman.points}")
