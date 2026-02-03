@@ -54,15 +54,6 @@ class MapGenerator:
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ]
     
-    def print_grid(self, pacman_position=None):
-        for y, row in enumerate(self.grid):
-            for x, cell in enumerate(row):
-                if pacman_position is not None and (x, y) == pacman_position:
-                    print(" ● ", end="")
-                elif cell == WALL:
-                    print("███", end="")
-                elif cell == TUNNEL:
-                    print("   ", end="")
                 else:
                     print(" ? ", end="")
             print()
