@@ -2,7 +2,8 @@ import argparse
 
 from map.map_generator import MapGenerator
 from seeded_random import SeededRandom
-from map.map_visualization import MapVisualization
+from visualisation.visualizer import Visualizer
+import random
 
 def main():
     app_args = parse_arguments()
@@ -29,6 +30,15 @@ def test_map_generation():
 
     MapVisualization.display_map(map)
 
+    srand = SeededRandom(seed=random.randint(0, 100000))
+    generator = MapGenerator(grid_width, grid_height, srand=srand)
+    generator.generate_map()
+    generator.print_grid()
+    
+    # Гра в окремому вікні
+    visualizer = Visualizer(generator)
+    visualizer.run()
+    
 
 if __name__ == "__main__":
     main()
