@@ -1,6 +1,6 @@
 import pygame
-from constants import WALL, TUNNEL
-
+from constants import *
+from map.config import MapGeneratorConfig as cfg
 class MapVisualization:
     
     @staticmethod
@@ -42,11 +42,24 @@ class MapVisualization:
                 elif map.grid[y][x] == WALL:
                     color = (0, 0, 0)
                 else:
-                    color = (255, 255, 255)
+                    color = (100, 100, 100)
 
                 pygame.draw.rect(screen, color, rect)
                 
-                if (map.untouchable_zones[y][x] == True):
+                if (map.pellet_grid[y][x] == PELLET):
+                    ux = x*cell_size + cell_size//2
+                    uy = y*cell_size + cell_size//2
+                    pygame.draw.circle(screen, (255, 255, 0), (ux, uy), 3)
+                elif (map.pellet_grid[y][x] == FRUIT):
+                    ux = x*cell_size + cell_size//2
+                    uy = y*cell_size + cell_size//2
+                    pygame.draw.circle(screen, (0, 255, 0), (ux, uy), 3)
+                elif (map.pellet_grid[y][x] == POWER):
+                    ux = x*cell_size + cell_size//2
+                    uy = y*cell_size + cell_size//2
+                    pygame.draw.circle(screen, (255, 205, 0), (ux, uy), 6)
+                
+                if (map.untouchable_zones[y][x] == True and cfg.DEBUG_VIEW):
                     ux = x*cell_size + cell_size//2
                     uy = y*cell_size + cell_size//2
                     pygame.draw.circle(screen, (255, 0, 0), (ux, uy), 2)
