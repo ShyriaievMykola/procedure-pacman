@@ -22,10 +22,14 @@ def main():
     if app_args.test_visualization:
         test_map_visualization()
 
+    if app_args.test_pacman:
+        test_pacman()
+
 def parse_arguments():    
     parser = argparse.ArgumentParser(description="Procedural Pac-Man Maze Generator")
     parser.add_argument('--test-map',action='store_true', help='Test map generation')
     parser.add_argument('--test-visualization',action='store_true', help='Test map visualization')
+    parser.add_argument('--test-pacman',action='store_true', help='Test pacman movement')
     return parser.parse_args()
 
 def get_map():
@@ -56,22 +60,15 @@ def test_map_visualization():
 
 
 def test_pacman():
-    # Не змінювати до повноцінної імплементації генератора карти
-    tile_size = 20
-    grid_width = 21
-    grid_height = 36
-
-    srand = SeededRandom(seed=random.randint(0, 100000))
-    generator = MapGenerator(grid_width, grid_height, srand=srand)
-    generator.generate_map()
-    pacman.position = pacman.get_spawn_position(generator.grid)
+    map = get_map()
+    pacman.position = pacman.get_spawn_position(map.grid)
     fps = 10
     while True:
         time.sleep(1 / fps)
         pacman.control()
-        pacman.resolve_pend(generator.grid)
+        pacman.resolve_pend(map.grid)
         os.system('cls')
-        generator.print_grid(pacman.position)
+        map.print_grid(pacman.position)
         print(f"Points: {pacman.points}")
 
 if __name__ == "__main__":
