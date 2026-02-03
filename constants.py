@@ -2,6 +2,8 @@
 WALL = 1
 TUNNEL = 0
 
-# розміри будинку привидів
-GHOST_HOUSE_WIDTH = 3
-GHOST_HOUSE_HEIGHT = 2
+# літерали для представлення типів клітинок об'єктів на карті
+EMPTY = 0
+PELLET = 1
+FRUIT = 2
+POWER = 3

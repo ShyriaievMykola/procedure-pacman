@@ -13,3 +13,10 @@ class CameraConfig:
     FRICTION = 0.85
     MIN_VELOCITY = 0.1
     SPEED_DIVISOR = 3
+
+class GameConfig:
+    PACMAN_SPEED_MS = 200
+    CAMERA_SMOOTHING = 0.15
+    CAMERA_MARGIN_PCT = 0.3
+    MOUTH_ANIM_SPEED = 100
+    PACMAN_RADIUS_OFFSET = 2
