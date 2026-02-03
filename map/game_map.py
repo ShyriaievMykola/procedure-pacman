@@ -14,12 +14,15 @@ class GameMap:
         self.passage_right = passage_right
 
     # Друк карти в консоль
-    def print_grid(self,pacman_position = None):
+    def print_grid(self, pacman_position=None, ghost_positions=None):
+
         for y in range(self.height):
             row = ""
             for x in range(self.width):
                 if pacman_position is not None and (x, y) == pacman_position:
-                    row += " ● "
+                    row += " ● " 
+                elif ghost_positions is not None and (x, y) == ghost_positions:
+                    row += " g "
                 elif (self.ghost_x[0] <= x <= self.ghost_x[1] and self.ghost_y[0] <= y <= self.ghost_y[1]):
                     row += " G "
                 elif (x, y) == self.ghost_door:

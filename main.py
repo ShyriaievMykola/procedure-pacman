@@ -34,11 +34,15 @@ def main():
     if app_args.test_pacman:
         test_pacman(map)
 
+    if app_args.test_ghost:
+        test_ghost()
+
 def parse_arguments():    
     parser = argparse.ArgumentParser(description="Procedural Pac-Man Maze Generator")
     parser.add_argument('--test-map',action='store_true', help='Test map generation')
     parser.add_argument('--test-visualization',action='store_true', help='Test visualization')
     parser.add_argument('--test-pacman',action='store_true', help='Test pacman movement')
+    parser.add_argument('--test-ghost', action='store_true', help='Test ghost behavior')
     parser.add_argument('--test-texture-map',action='store_true', help='Test texture map')
     parser.add_argument('--seed', type=int, help='Set seed')
     return parser.parse_args()
@@ -68,6 +72,26 @@ def test_pacman(map):
         map.print_grid(pacman.position)
         print(f"Points: {pacman.points}")
 
+def test_ghost():
+    map = get_map()
+    # Ініціалізація Pacman
+    pacman.position = pacman.get_spawn_position(map.grid)
+    pacman.movement_direction = (0, 0)
+    pacman.pending_direction = (0, 0)
+    pacman.points = 0
+
+    from ghosts.ghost_manager import GhostManager
+    ghost_manager = GhostManager(map)
+    fps = 10
+    while True:
+        time.sleep(1 / fps)
+        pacman.control()
+        pacman.resolve_pend(map.grid)
+        os.system('cls')
+        map.print_grid(pacman.position, ghost_manager.ghosts[0].position)
+        print(f"Points: {pacman.points}, Ghost Position: {ghost_manager.ghosts[0].position}, Strategy: {type(ghost_manager.ghosts[0].strategy)}")
+        ghost_manager.update(pacman)
+        
 def test_texture_map(map):
     texture_map = map.get_texture_map()
     for y in range(map.height):
