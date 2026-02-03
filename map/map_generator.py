@@ -1,9 +1,11 @@
 from collections import deque
+import math
 import random
 
 from constants import *
 from map.game_map import GameMap
 from seeded_random import SeededRandom
+from map.config import MapGeneratorConfig as cfg
 
 class MapGenerator:        
         
@@ -11,7 +13,7 @@ class MapGenerator:
     @staticmethod
     def generate_map(width, height, seed=None):
 
-        map = GameMap(None, height, width, None, None, None, None, None, None)
+        map = GameMap(None, height, width, None, None, None, None, None, None, None)
 
         if (seed is not None):
             map.seed = seed
@@ -32,8 +34,8 @@ class MapGenerator:
 
         while not correct:
             MapGenerator.grow_branches(height, width, map.grid, map.untouchable_zones, srand)
-            start_x = (width // 2) - (GHOST_HOUSE_WIDTH // 2)
-            start_y = (height // 2) - (GHOST_HOUSE_HEIGHT // 2)
+            start_x = (width // 2) - (cfg.GHOST_HOUSE_WIDTH // 2)
+            start_y = (height // 2) - (cfg.GHOST_HOUSE_HEIGHT // 2)
             ghost_tunnel = (start_x - 2, start_y - 2)
             path_check_1 = MapGenerator.path_exists(map.grid, (ghost_tunnel), (width - 2, height // 2))
             path_check_2 = MapGenerator.path_exists(map.grid, (1, height // 2), (ghost_tunnel))
@@ -44,8 +46,77 @@ class MapGenerator:
             if not correct:
                 map.grid = [row[:] for row in backup_grid]
                 map.untouchable_zones = [row[:] for row in backup_untouchable]
-
+        
+        MapGenerator.clear_pellet_grid(map)
+        MapGenerator.spawn_pellets(map, srand)
+        MapGenerator.spawn_fruit(map)
+        MapGenerator.spawn_power(map)
         return map
+
+    # Очищення масиву монеток
+    @staticmethod
+    def clear_pellet_grid(map):
+        map.pellet_grid = [[EMPTY for _ in range(map.width)] for _ in range(map.height)]
+
+    # Виставлення всіх монеток
+    @staticmethod
+    def spawn_pellets(map, srand):
+        for y in range(1, map.height - 1):
+            for x in range(1, map.width - 1):
+                if (map.grid[y][x] == TUNNEL):
+                    if srand.randchance(cfg.PELLET_COVERAGE):
+                        map.pellet_grid[y][x] = PELLET
+
+        for y in range(map.ghost_y[0], map.ghost_y[1] + 1):
+            for x in range(map.ghost_x[0], map.ghost_x[1] + 1):
+                if map.pellet_grid[y][x] != EMPTY:
+                    map.pellet_grid[y][x] = EMPTY
+
+
+    # Спавн фрукта
+    @staticmethod
+    def spawn_fruit(map):
+        x = (map.ghost_x[0] + map.ghost_x[1]) // 2
+        y = map.ghost_y[1] + 2
+        map.pellet_grid[y][x] = FRUIT
+
+    # Спавн мега-монето(підсилень)
+    @staticmethod
+    def spawn_power(map):
+        
+        power_count = (map.height * map.width * cfg.POWER_COVERAGE / 100) // 1
+
+        valid_cells = [
+            (x, y)
+            for y in range(map.height)
+            for x in range(map.width)
+            if map.pellet_grid[y][x] == PELLET
+        ]
+        placed = [random.choice(valid_cells)]
+
+        while len(placed) < power_count:
+            best_cell = None
+            best_min_dist = -1
+
+            for cell in valid_cells:
+                if cell in placed:
+                    continue
+
+                min_dist = min(MapGenerator.dist(cell, p) for p in placed)
+
+                if min_dist > best_min_dist:
+                    best_min_dist = min_dist
+                    best_cell = cell
+
+            placed.append(best_cell)
+
+        for power in placed:
+            map.pellet_grid[power[1]][power[0]] = POWER
+
+    #Знаходження відстані між 2 точками
+    @staticmethod
+    def dist(a, b):
+        return math.hypot(a[0] - b[0], a[1] - b[1])
 
     # Розростання гілок тунелів
     @staticmethod
@@ -89,34 +160,34 @@ class MapGenerator:
     # Вирізати будинок привидів у центрі карти
     @staticmethod
     def carve_ghost_room(width, height, grid, untouchable_zones):
-        start_x = (width // 2) - (GHOST_HOUSE_WIDTH // 2)
-        start_y = (height // 2) - (GHOST_HOUSE_HEIGHT // 2)
+        start_x = (width // 2) - (cfg.GHOST_HOUSE_WIDTH // 2)
+        start_y = (height // 2) - (cfg.GHOST_HOUSE_HEIGHT // 2)
         
         # Зберегти координати будинку привидів та дверей
-        ghost_x = (start_x, start_x + GHOST_HOUSE_WIDTH - 1)
-        ghost_y = (start_y, start_y + GHOST_HOUSE_HEIGHT - 1)
+        ghost_x = (start_x, start_x + cfg.GHOST_HOUSE_WIDTH - 1)
+        ghost_y = (start_y, start_y + cfg.GHOST_HOUSE_HEIGHT - 1)
         ghost_door = ((ghost_x[0] + ghost_x[1]) // 2, ghost_y[0] - 1)
 
         # Вирізати будинок привидів
-        for y in range(start_y, start_y + GHOST_HOUSE_HEIGHT):
-            for x in range(start_x, start_x + GHOST_HOUSE_WIDTH):
+        for y in range(start_y, start_y + cfg.GHOST_HOUSE_HEIGHT):
+            for x in range(start_x, start_x + cfg.GHOST_HOUSE_WIDTH):
                 grid[y][x] = TUNNEL
 
 
         # вирізати тунелі навколо будинку привидів
-        for x in range(start_x - 2, start_x + GHOST_HOUSE_WIDTH + 2):
-            grid[start_y + GHOST_HOUSE_HEIGHT + 1][x] = TUNNEL
+        for x in range(start_x - 2, start_x + cfg.GHOST_HOUSE_WIDTH + 2):
+            grid[start_y + cfg.GHOST_HOUSE_HEIGHT + 1][x] = TUNNEL
 
-        for x in range(start_x - 2, start_x + GHOST_HOUSE_WIDTH + 2):
+        for x in range(start_x - 2, start_x + cfg.GHOST_HOUSE_WIDTH + 2):
             grid[start_y - 2][x] = TUNNEL
 
-        for y in range(start_y - 2, start_y + GHOST_HOUSE_HEIGHT + 2):
+        for y in range(start_y - 2, start_y + cfg.GHOST_HOUSE_HEIGHT + 2):
             grid[y][start_x - 2] = TUNNEL
-            grid[y][start_x + GHOST_HOUSE_WIDTH + 1] = TUNNEL
+            grid[y][start_x + cfg.GHOST_HOUSE_WIDTH + 1] = TUNNEL
 
         # позначити зони навколо будинку привидів як недоторкані
-        for y in range(start_y - 2, start_y + GHOST_HOUSE_HEIGHT + 2):
-            for x in range(start_x - 2, start_x + GHOST_HOUSE_WIDTH + 2):
+        for y in range(start_y - 2, start_y + cfg.GHOST_HOUSE_HEIGHT + 2):
+            for x in range(start_x - 2, start_x + cfg.GHOST_HOUSE_WIDTH + 2):
                 untouchable_zones[y][x] = True
 
         return ghost_x, ghost_y, ghost_door

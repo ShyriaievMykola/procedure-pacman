@@ -1,11 +1,12 @@
 from constants import WALL
 
 class GameMap:
-    def __init__(self, seed, height, width, grid, ghost_x, ghost_y, ghost_door, passage_left, passage_right):
+    def __init__(self, seed, height, width, grid, pellet_grid, ghost_x, ghost_y, ghost_door, passage_left, passage_right):
         self.seed = seed
         self.height = height
         self.width = width
         self.grid = grid
+        self.pellet_grid = pellet_grid
         self.ghost_x = ghost_x
         self.ghost_y = ghost_y
         self.ghost_door = ghost_door
