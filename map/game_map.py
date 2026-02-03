@@ -33,3 +33,31 @@ class GameMap:
                 else:
                     row += "   "
             print(row)
+
+    # отримання карти для промальовування стін
+    def get_texture_map(self):
+
+        texture_map = [[-1 for _ in range(self.width)] for _ in range(self.height)]
+    
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.grid[y][x] == WALL:
+                    mask = 0
+                    
+                    if y > 0 and self.grid[y-1][x] == WALL:
+                        mask |= 1
+
+                    if x < self.width - 1 and self.grid[y][x+1] == WALL:
+                        mask |= 2
+
+                    if y < self.height - 1 and self.grid[y+1][x] == WALL:
+                        mask |= 4
+
+                    if x > 0 and self.grid[y][x-1] == WALL:
+                        mask |= 8
+                    
+                    texture_map[y][x] = mask
+        return texture_map
+        
+
+
