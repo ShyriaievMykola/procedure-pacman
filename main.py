@@ -4,7 +4,11 @@ from map.map_generator import MapGenerator
 from map.map_visualization import MapVisualization
 from seeded_random import SeededRandom
 from visualisation.visualizer import Visualizer
+from constants import *
+import pacman
 import random
+import os
+import time
 
 def main():
     app_args = parse_arguments()
@@ -45,5 +49,31 @@ def test_map_visualization():
     visualizer = Visualizer(map)
     visualizer.run()
 
+    srand = SeededRandom(seed=random.randint(0, 100000))
+    generator = MapGenerator(grid_width, grid_height, srand=srand)
+    generator.generate_map()
+    generator.print_grid()
+
+
+def test_pacman():
+    # Не змінювати до повноцінної імплементації генератора карти
+    tile_size = 20
+    grid_width = 21
+    grid_height = 36
+
+    srand = SeededRandom(seed=random.randint(0, 100000))
+    generator = MapGenerator(grid_width, grid_height, srand=srand)
+    generator.generate_map()
+    pacman.position = pacman.get_spawn_position(generator.grid)
+    fps = 10
+    while True:
+        time.sleep(1 / fps)
+        pacman.control()
+        pacman.resolve_pend(generator.grid)
+        os.system('cls')
+        generator.print_grid(pacman.position)
+        print(f"Points: {pacman.points}")
+
 if __name__ == "__main__":
     main()
+    input()
