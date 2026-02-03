@@ -30,16 +30,6 @@ def resolve_pend(maze : list # 2D Сітка лабіринту
             position = (new_x, new_y)
         else:    # Вдарились в стіну
             pass # Стоїмо на місці
-#     grab(maze, position)
-
-# def grab(maze : list, # 2D Сітка лабіринту
-#         position : tuple[int, int]
-#         ) -> int: # Повертає тип тайла, який був взятий
-#     x, y = position
-#     tile = maze[y][x]
-#     if tile == PELLET:
-#         eat_pellet(maze, position)
-#     return tile
 
 def eat_pellet( maze : list, # 2D Сітка лабіринту
                 position : tuple[int, int] # Точка звідки їмо таблетку
