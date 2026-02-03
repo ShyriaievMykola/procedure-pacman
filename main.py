@@ -14,9 +14,6 @@ import time
 def main():
     app_args = parse_arguments()
 
-    print("Hello, World!")
-    print()
-
     seed = None
 
     if app_args.seed is not None:
@@ -24,6 +21,9 @@ def main():
 
     map = get_map(seed)
     print(f"using seed: {map.seed}")
+
+    if app_args.test_texture_map:
+        test_texture_map(map)
 
     if app_args.test_map:
         test_map_generation(map)
@@ -39,6 +39,7 @@ def parse_arguments():
     parser.add_argument('--test-map',action='store_true', help='Test map generation')
     parser.add_argument('--test-visualization',action='store_true', help='Test visualization')
     parser.add_argument('--test-pacman',action='store_true', help='Test pacman movement')
+    parser.add_argument('--test-texture-map',action='store_true', help='Test texture map')
     parser.add_argument('--seed', type=int, help='Set seed')
     return parser.parse_args()
 
@@ -48,7 +49,6 @@ def get_map(seed=None):
     seed = seed
 
     return MapGenerator.generate_map(grid_width, grid_height, seed)
-
 
 def test_map_generation(map):
     MapVisualization.display_map(map)
@@ -68,6 +68,18 @@ def test_pacman(map):
         map.print_grid(pacman.position)
         print(f"Points: {pacman.points}")
 
+def test_texture_map(map):
+    texture_map = map.get_texture_map()
+    for y in range(map.height):
+        row = ""
+        for x in range(map.width):
+            
+            if (texture_map[y][x] < 10 and texture_map[y][x] != -1):
+                row += f" {texture_map[y][x]} "
+            else:
+                row += f"{texture_map[y][x]} "
+
+        print(row)
+
 if __name__ == "__main__":
     main()
-    input()
