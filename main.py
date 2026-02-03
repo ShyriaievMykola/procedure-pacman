@@ -16,51 +16,50 @@ def main():
     print("Hello, World!")
     print()
 
+    seed = None
+
+    if app_args.seed is not None:
+        seed = app_args.seed
+
+    map = get_map(seed)
+    print(f"using seed: {map.seed}")
+
     if app_args.test_map:
-        test_map_generation()
+        test_map_generation(map)
 
     if app_args.test_visualization:
-        test_map_visualization()
+        test_map_visualization(map)
 
     if app_args.test_pacman:
-        test_pacman()
+        test_pacman(map)
 
 def parse_arguments():    
     parser = argparse.ArgumentParser(description="Procedural Pac-Man Maze Generator")
     parser.add_argument('--test-map',action='store_true', help='Test map generation')
     parser.add_argument('--test-visualization',action='store_true', help='Test map visualization')
     parser.add_argument('--test-pacman',action='store_true', help='Test pacman movement')
+    parser.add_argument('--seed', type=int, help='Set seed')
     return parser.parse_args()
 
-def get_map():
+def get_map(seed=None):
     grid_width = 21
     grid_height = 36
-    seed = None
+    seed = seed
 
     return MapGenerator.generate_map(grid_width, grid_height, seed)
 
 
-def test_map_generation():
-    map = get_map()
-
+def test_map_generation(map):
     MapVisualization.display_map(map)
     
     
     
 # Гра в окремому вікні
-def test_map_visualization():
-    map = get_map()
+def test_map_visualization(map):
     visualizer = Visualizer(map)
     visualizer.run()
 
-    srand = SeededRandom(seed=random.randint(0, 100000))
-    generator = MapGenerator(grid_width, grid_height, srand=srand)
-    generator.generate_map()
-    generator.print_grid()
-
-
-def test_pacman():
-    map = get_map()
+def test_pacman(map):
     pacman.position = pacman.get_spawn_position(map.grid)
     fps = 10
     while True:
