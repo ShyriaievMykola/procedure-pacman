@@ -29,10 +29,7 @@ def main():
         test_map_generation(map)
 
     if app_args.test_visualization:
-        test_map_visualization(map)
-
-    if app_args.test_pacman_visualization:
-        test_pacman_visualization(map)
+        test_visualization(map)
 
     if app_args.test_pacman:
         test_pacman(map)
@@ -40,8 +37,7 @@ def main():
 def parse_arguments():    
     parser = argparse.ArgumentParser(description="Procedural Pac-Man Maze Generator")
     parser.add_argument('--test-map',action='store_true', help='Test map generation')
-    parser.add_argument('--test-visualization',action='store_true', help='Test map visualization')
-    parser.add_argument('--test-pacman-visualization', action="store_true", help='Test pacman visualization')
+    parser.add_argument('--test-visualization',action='store_true', help='Test visualization')
     parser.add_argument('--test-pacman',action='store_true', help='Test pacman movement')
     parser.add_argument('--seed', type=int, help='Set seed')
     return parser.parse_args()
@@ -56,12 +52,8 @@ def get_map(seed=None):
 
 def test_map_generation(map):
     MapVisualization.display_map(map)
-    
-def test_map_visualization(map):
-    visualizer = Visualizer(map)
-    visualizer.run()
 
-def test_pacman_visualization(map):
+def test_visualization(map):
     game = PacManVisualizer(map)
     game.run()
 
