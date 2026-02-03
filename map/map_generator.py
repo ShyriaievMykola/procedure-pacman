@@ -25,15 +25,15 @@ class MapGenerator:
         map.grid = [[WALL for _ in range(width)] for _ in range(height)]
         map.untouchable_zones = [[False for _ in range(width)] for _ in range(height)]
 
-        map.ghost_x, map.ghost_y, map.ghost_door = MapGenerator.carve_ghost_room(width, height, map.grid, map.untouchable_zones)
-        map.passage_left, map.passage_right = MapGenerator.carve_passages(width, height, map.grid, map.untouchable_zones)
+        map.ghost_x, map.ghost_y, map.ghost_door = MapGenerator.carve_ghost_room(map)
+        map.passage_left, map.passage_right = MapGenerator.carve_passages(map)
 
         backup_grid = [row[:] for row in map.grid]
         backup_untouchable = [row[:] for row in map.untouchable_zones]
         correct = False
 
         while not correct:
-            MapGenerator.grow_branches(height, width, map.grid, map.untouchable_zones, srand)
+            MapGenerator.grow_branches(map, srand)
             start_x = (width // 2) - (cfg.GHOST_HOUSE_WIDTH // 2)
             start_y = (height // 2) - (cfg.GHOST_HOUSE_HEIGHT // 2)
             ghost_tunnel = (start_x - 2, start_y - 2)
@@ -120,48 +120,48 @@ class MapGenerator:
 
     # Розростання гілок тунелів
     @staticmethod
-    def grow_branches(height, width, grid, untouchable_zones, srand):
+    def grow_branches(map, srand):
         tries = 3       
         iteration = 1 
         while tries > 0:
             print (f"iteration: {iteration}")
             iteration += 1
             tries -= 1
-            for y in range(1, height - 1):
-                for x in range(1, width - 1):
-                    if grid[y][x] == WALL:
+            for y in range(1, map.height - 1):
+                for x in range(1, map.width - 1):
+                    if map.grid[y][x] == WALL:
                         if srand.randchance(30):
-                            carved = MapGenerator.carve_tunnel(x, y, width, height, grid, untouchable_zones)
+                            carved = MapGenerator.carve_tunnel(x, y, map)
                             if carved: tries = 3
 
-                    elif MapGenerator.is_forming_pattern(x, y, width, height, grid) and srand.randchance(50):
-                        MapGenerator.make_untouchable_zone(x, y, untouchable_zones, width, height, srand)
+                    elif MapGenerator.is_forming_pattern(x, y, map) and srand.randchance(50):
+                        MapGenerator.make_untouchable_zone(x, y, map, srand)
 
     @staticmethod
-    def carve_tunnel(x, y, width, height, grid, untouchable_zones):
-        has_tunnel = MapGenerator.has_adjacent_tunnel(x, y, grid, width, height)
-        is_forming_square = MapGenerator.is_forming_square(x, y, grid)
+    def carve_tunnel(x, y, map):
+        has_tunnel = MapGenerator.has_adjacent_tunnel(x, y, map)
+        is_forming_square = MapGenerator.is_forming_square(x, y, map.grid)
         if (has_tunnel and not is_forming_square
-            and not untouchable_zones[y][x]):
-            grid[y][x] = TUNNEL
+            and not map.untouchable_zones[y][x]):
+            map.grid[y][x] = TUNNEL
             return True
         return False
 
     #Позначення зони "недоторканою"
     @staticmethod
-    def make_untouchable_zone(x, y, untouchable_zones, width, height, srand):
+    def make_untouchable_zone(x, y, map, srand):
         for dy in range(-1, 2):
             for dx in range(-1, 2):
                 px = x + dx
                 py = y + dy
-                if 0 <= px < width and 0 <= py < height and srand.randchance(75):
-                    untouchable_zones[py][px] = True
+                if 0 <= px < map.width and 0 <= py < map.height and srand.randchance(75):
+                    map.untouchable_zones[py][px] = True
 
     # Вирізати будинок привидів у центрі карти
     @staticmethod
-    def carve_ghost_room(width, height, grid, untouchable_zones):
-        start_x = (width // 2) - (cfg.GHOST_HOUSE_WIDTH // 2)
-        start_y = (height // 2) - (cfg.GHOST_HOUSE_HEIGHT // 2)
+    def carve_ghost_room(map):
+        start_x = (map.width // 2) - (cfg.GHOST_HOUSE_WIDTH // 2)
+        start_y = (map.height // 2) - (cfg.GHOST_HOUSE_HEIGHT // 2)
         
         # Зберегти координати будинку привидів та дверей
         ghost_x = (start_x, start_x + cfg.GHOST_HOUSE_WIDTH - 1)
@@ -171,43 +171,43 @@ class MapGenerator:
         # Вирізати будинок привидів
         for y in range(start_y, start_y + cfg.GHOST_HOUSE_HEIGHT):
             for x in range(start_x, start_x + cfg.GHOST_HOUSE_WIDTH):
-                grid[y][x] = TUNNEL
+                map.grid[y][x] = TUNNEL
 
 
         # вирізати тунелі навколо будинку привидів
         for x in range(start_x - 2, start_x + cfg.GHOST_HOUSE_WIDTH + 2):
-            grid[start_y + cfg.GHOST_HOUSE_HEIGHT + 1][x] = TUNNEL
+            map.grid[start_y + cfg.GHOST_HOUSE_HEIGHT + 1][x] = TUNNEL
 
         for x in range(start_x - 2, start_x + cfg.GHOST_HOUSE_WIDTH + 2):
-            grid[start_y - 2][x] = TUNNEL
+            map.grid[start_y - 2][x] = TUNNEL
 
         for y in range(start_y - 2, start_y + cfg.GHOST_HOUSE_HEIGHT + 2):
-            grid[y][start_x - 2] = TUNNEL
-            grid[y][start_x + cfg.GHOST_HOUSE_WIDTH + 1] = TUNNEL
+            map.grid[y][start_x - 2] = TUNNEL
+            map.grid[y][start_x + cfg.GHOST_HOUSE_WIDTH + 1] = TUNNEL
 
         # позначити зони навколо будинку привидів як недоторкані
         for y in range(start_y - 2, start_y + cfg.GHOST_HOUSE_HEIGHT + 2):
             for x in range(start_x - 2, start_x + cfg.GHOST_HOUSE_WIDTH + 2):
-                untouchable_zones[y][x] = True
+                map.untouchable_zones[y][x] = True
 
         return ghost_x, ghost_y, ghost_door
     
     # Вирізати тунелі з обох сторін карти
     @staticmethod
-    def carve_passages(width, height, grid, untouchable_zones):
-        middle_y = height // 2
+    def carve_passages(map):
+        middle_y = map.height // 2
 
         # Зберегти координати проходів
         passage_left = (0, middle_y)
-        passage_right = (width - 1, middle_y)
+        passage_right = (map.width - 1, middle_y)
 
         for x in range(3):
-            grid[middle_y][x] = TUNNEL
-            grid[middle_y][width - 1 - x] = TUNNEL
+            map.grid[middle_y][x] = TUNNEL
+            map.grid[middle_y][map.width - 1 - x] = TUNNEL
 
             for y in range(3):
-                untouchable_zones[middle_y - 1 + y][x] = True
-                untouchable_zones[middle_y - 1 + y][width - 1 - x] = True
+                map.untouchable_zones[middle_y - 1 + y][x] = True
+                map.untouchable_zones[middle_y - 1 + y][map.width - 1 - x] = True
 
         return passage_left, passage_right
 
@@ -244,12 +244,12 @@ class MapGenerator:
 
     # Перевірка наявності сусіднього тунелю
     @staticmethod
-    def has_adjacent_tunnel(x, y, grid, width, height):
+    def has_adjacent_tunnel(x, y, map):
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
         for dx, dy in directions:
             nx, ny = x + dx, y + dy
-            if 0 <= nx < width and 0 <= ny < height:
-                if grid[ny][nx] == TUNNEL:
+            if 0 <= nx < map.width and 0 <= ny < map.height:
+                if map.grid[ny][nx] == TUNNEL:
                     return True
         return False
 
@@ -270,7 +270,7 @@ class MapGenerator:
 
     # Перевірка чи стіни йдуть по певному "шаблону"
     @staticmethod
-    def is_forming_pattern(x, y, width, height, grid):
+    def is_forming_pattern(x, y, map):
         patterns = [
             # Horizontal corridor
             [
@@ -318,8 +318,8 @@ class MapGenerator:
                     px = x + dx
                     py = y + dy
 
-                    if 0 <= px < width and 0 <= py < height:
-                        cell = grid[py][px]
+                    if 0 <= px < map.width and 0 <= py < map.height:
+                        cell = map.grid[py][px]
                     else:
                         return False
 
