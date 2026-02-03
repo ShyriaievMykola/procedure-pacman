@@ -11,3 +11,4 @@ class MapGeneratorConfig:
     POWER_COVERAGE = 0.6        # %
 
     DEBUG_VIEW = False
+    ADVANCED_WALLS_VIEW = True
