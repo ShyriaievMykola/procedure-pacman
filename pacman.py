@@ -1,5 +1,6 @@
 from constants import *
 import keyboard 
+from map.game_map import GameMap
 
 # Будем робити по ООП, тут буде зазначений стан і позиція пекмена
 position : tuple[int, int] 
@@ -8,15 +9,17 @@ pending_direction : tuple[int, int] = (0, 0) # Напрямок, в який г�
                                             # (користувач вказав напрямок але поки там стіна)
 points : int = 0
 
-def get_spawn_position(maze : list # 2D Сітка лабіринту 
+def get_spawn_position(map : GameMap
                     ) -> tuple[int, int]: # Повертає координати x, y
-    for y, row in enumerate(maze):
+    
+    for y, row in enumerate(map.grid):
         for x, cell in enumerate(row):
             if cell == TUNNEL:
                 return x, y
 
-def resolve_pend(maze : list # 2D Сітка лабіринту
+def resolve_pend(map : GameMap
                 ):
+    maze = map.grid
     global movement_direction, pending_direction, position
     new_x = position[0] + pending_direction[0]
     new_y = position[1] + pending_direction[1]
@@ -30,12 +33,33 @@ def resolve_pend(maze : list # 2D Сітка лабіринту
             position = (new_x, new_y)
         else:    # Вдарились в стіну
             pass # Стоїмо на місці
+    eat(position, map)
 
-def eat_pellet( maze : list, # 2D Сітка лабіринту
+def eat(position : tuple[int, int], # Точка звідки їмо таблетку
+        map : GameMap
+        ):
+    x, y = position
+    if (x,y) == map.passage_left:
+        go_through_passage_left(map)
+    elif (x,y) == map.passage_right:
+        go_through_passage_right(map)
+    # Сюди додати поїдання таблеток, бонусів і т.д.
+
+
+def go_through_passage_left(map : GameMap):
+    global position
+    position = map.passage_right
+
+def go_through_passage_right(map : GameMap):
+    global position
+    position = map.passage_left
+
+def eat_pellet( map : GameMap,
                 position : tuple[int, int] # Точка звідки їмо таблетку
                 ):
     global points
     x, y = position
+    maze = map.grid
     maze[y][x] = TUNNEL
     points += 1
 
