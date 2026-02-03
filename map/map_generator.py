@@ -50,8 +50,11 @@ class MapGenerator:
     # Розростання гілок тунелів
     @staticmethod
     def grow_branches(height, width, grid, untouchable_zones, srand):
-        tries = 3        
+        tries = 3       
+        iteration = 1 
         while tries > 0:
+            print (f"iteration: {iteration}")
+            iteration += 1
             tries -= 1
             for y in range(1, height - 1):
                 for x in range(1, width - 1):
