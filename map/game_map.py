@@ -1,7 +1,8 @@
 from constants import WALL
 
 class GameMap:
-    def __init__(self, height, width, grid, ghost_x, ghost_y, ghost_door, passage_left, passage_right):
+    def __init__(self, seed, height, width, grid, ghost_x, ghost_y, ghost_door, passage_left, passage_right):
+        self.seed = seed
         self.height = height
         self.width = width
         self.grid = grid
@@ -12,7 +13,7 @@ class GameMap:
         self.passage_right = passage_right
 
     # Друк карти в консоль
-    def print_map(self):
+    def print_grid(self):
         for y in range(self.height):
             row = ""
             for x in range(self.width):
