@@ -82,14 +82,18 @@ def test_ghost():
     pacman.movement_direction = (0, 0)
     pacman.pending_direction = (0, 0)
     pacman.points = 0
+
+    from ghosts.ghost_manager import GhostManager
+    ghost_manager = GhostManager(map)
     fps = 10
     while True:
         time.sleep(1 / fps)
         pacman.control()
         pacman.resolve_pend(map.grid)
         os.system('cls')
-        map.print_grid(pacman.position)
-        print(f"Points: {pacman.points}")
+        map.print_grid(pacman.position, ghost_manager.ghosts[0].position)
+        print(f"Points: {pacman.points}, Ghost Position: {ghost_manager.ghosts[0].position}, Strategy: {type(ghost_manager.ghosts[0].strategy)}")
+        ghost_manager.update(pacman)
 
 if __name__ == "__main__":
     main()

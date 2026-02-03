@@ -1,30 +1,32 @@
 from ghosts.behaviors.base_behavior import BaseBehavior
 
 class ScatterBehavior(BaseBehavior):
-    def __init__(self, scatter_target):
+    def __init__(self, color, map_width, map_height):
         """
-        Логіка Scatter: рух до фіксованої точки на карті.
-        :param scatter_target: Фіксована точка (x, y), до якої рухається привид.
+        Логіка Scatter: рух до фіксованої точки на краях карти залежно від кольору привида.
+        :param color: Колір привида.
+        :param map_width: Ширина карти.
+        :param map_height: Висота карти.
         """
-        self.scatter_target = scatter_target
+        self.color = color
+        self.map_width = map_width
+        self.map_height = map_height
 
-    def get_target(self, ghost):
+    def get_target(self, pacman_position):
         """
-        Повертає фіксовану точку для Scatter.
-        :param ghost: Об'єкт привида.
+        Повертає фіксовану точку для Scatter залежно від кольору привида.
+        :param ghost: Об'єкт привида (не використовується в Scatter).
+        :param grid: Ігрова карта (не використовується в Scatter).
+        :param pacman_position: Позиція Pacman (не використовується в Scatter).
         :return: Точка (x, y).
         """
-        return self.scatter_target
-
-    def move(self, ghost, grid):
-        """
-        Рух до фіксованої точки.
-        :param ghost: Об'єкт привида.
-        :param grid: Ігрова карта.
-        :return: Нова позиція (x, y).
-        """
-        from utils.pathfinding import a_star
-        path = a_star(grid, (ghost.x, ghost.y), self.scatter_target)
-        if path:
-            return path[0]  # Повертаємо наступну точку на шляху
-        return ghost.x, ghost.y  # Якщо шлях не знайдено, залишаємося на місці
+        if self.color == "red":
+            return (0, 0)  # Верхній лівий кут
+        elif self.color == "blue":
+            return (self.map_width - 1, 0)  # Верхній правий кут
+        elif self.color == "pink":
+            return (0, self.map_height - 1)  # Нижній лівий кут
+        elif self.color == "orange":
+            return (self.map_width - 1, self.map_height - 1)  # Нижній правий кут
+        else:
+            return (self.map_width // 2, self.map_height // 2)  # Центр карти за замовчуванням

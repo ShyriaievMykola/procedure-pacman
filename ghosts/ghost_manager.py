@@ -1,40 +1,26 @@
 from ghosts.ghost import Ghost
-from ghosts.behaviors.chase_behavior import ChaseBehavior
-from ghosts.behaviors.scatter_behavior import ScatterBehavior
-from ghosts.behaviors.frightened_behavior import FrightenedBehavior
-from ghosts.behaviors.eaten_behavior import EatenBehavior
 
 class GhostManager:
-    def __init__(self, ghost_positions, grid):
+    def __init__(self, map):
         """
-        Initialize the GhostManager with a list of ghost positions and the game grid.
-        :param ghost_positions: List of tuples [(x, y, color), ...]
-        :param grid: The game grid.
+        Ініціалізація менеджера привидів.
+        :param map: Ігрова карта (двовимірний список).
         """
         self.ghosts = []
-        self.grid = grid
+        self.grid = map.grid
 
-        for pos in ghost_positions:
-            x, y, color = pos
-            self.ghosts.append(Ghost(x, y, color, ScatterBehavior()))  # Default state is "scatter"
+        # Визначаємо координати будиночка для привидів
+        self.map_width = len(self.grid[0])
+        self.map_height = len(self.grid)
+        self.ghost_house_center = map.ghost_door
 
-    def update(self, pacman_position):
-        """
-        Update all ghosts' positions and states.
-        :param pacman_position: The current position of Pacman (x, y).
-        """
+        # Створюємо привидів у будиночку
+        self.ghosts.append(Ghost(self.ghost_house_center, "orange", self.grid))
+        # self.ghosts.append(Ghost(self.ghost_house_center, "blue", grid))
+        # self.ghosts.append(Ghost(self.ghost_house_center, "pink", grid))
+        # self.ghosts.append(Ghost(self.ghost_house_center, "orange", grid))
+
+    def update(self, pacman):
         for ghost in self.ghosts:
-            if ghost.state == "scatter":
-                ghost.behavior = ScatterBehavior()
-            elif ghost.state == "chase":
-                ghost.behavior = ChaseBehavior(pacman_position)
-            elif ghost.state == "frightened":
-                ghost.behavior = FrightenedBehavior()
-            elif ghost.state == "eaten":
-                ghost.behavior = EatenBehavior()
-            ghost.move(self.grid)
-
-    def reset(self):
-        """Reset all ghosts to their initial positions."""
-        for ghost in self.ghosts:
-            ghost.reset(ghost.x, ghost.y)
+            ghost.get_target_tile(pacman.position)
+            ghost.move()

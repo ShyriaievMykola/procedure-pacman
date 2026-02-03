@@ -20,7 +20,7 @@ class GameMap:
             for x in range(self.width):
                 if pacman_position is not None and (x, y) == pacman_position:
                     row += " ● " 
-                elif ghost_positions is not None and (x, y) in ghost_positions:
+                elif ghost_positions is not None and (x, y) == ghost_positions:
                     row += " g "
                 elif (self.ghost_x[0] <= x <= self.ghost_x[1] and self.ghost_y[0] <= y <= self.ghost_y[1]):
                     row += " G "
