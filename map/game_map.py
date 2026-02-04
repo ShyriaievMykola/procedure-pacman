@@ -28,9 +28,9 @@ class GameMap:
                 elif (x, y) == self.ghost_door:
                     row += " D "
                 elif (x, y) == self.passage_left:
-                    row += " L "
+                    row += "<- "
                 elif (x, y) == self.passage_right:
-                    row += " R "
+                    row += " ->"
                 elif self.grid[y][x] == WALL:
                     row += "███"
                 else:

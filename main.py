@@ -36,6 +36,9 @@ def main():
 
     if app_args.test_ghost:
         test_ghost()
+    
+    if len(app_args) == 0:
+        test_visualization(map)
 
 def parse_arguments():    
     parser = argparse.ArgumentParser(description="Procedural Pac-Man Maze Generator")
@@ -62,12 +65,11 @@ def test_visualization(map):
     game.run()
 
 def test_pacman(map):
-    pacman.position = pacman.get_spawn_position(map.grid)
+    pacman.position = pacman.get_spawn_position(map)
     fps = 10
     while True:
         time.sleep(1 / fps)
-        pacman.control()
-        pacman.resolve_pend(map.grid)
+        pacman.update(map)
         os.system('cls')
         map.print_grid(pacman.position)
         print(f"Points: {pacman.points}")
@@ -75,7 +77,7 @@ def test_pacman(map):
 def test_ghost():
     map = get_map()
     # Ініціалізація Pacman
-    pacman.position = pacman.get_spawn_position(map.grid)
+    pacman.position = pacman.get_spawn_position(map)
     pacman.movement_direction = (0, 0)
     pacman.pending_direction = (0, 0)
     pacman.points = 0
@@ -86,7 +88,7 @@ def test_ghost():
     while True:
         time.sleep(1 / fps)
         pacman.control()
-        pacman.resolve_pend(map.grid)
+        pacman.resolve_pend(map)
         os.system('cls')
         map.print_grid(pacman.position, ghost_manager.ghosts[0].position)
         print(f"Points: {pacman.points}, Ghost Position: {ghost_manager.ghosts[0].position}, Strategy: {type(ghost_manager.ghosts[0].strategy)}")
