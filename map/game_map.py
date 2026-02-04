@@ -32,9 +32,9 @@ class GameMap:
                 elif (x, y) == self.ghost_door:
                     row += " D "  # Відображення дверей будиночка привидів
                 elif (x, y) == self.passage_left:
-                    row += " L "  # Відображення лівого проходу
+                    row += "<- "
                 elif (x, y) == self.passage_right:
-                    row += " R "  # Відображення правого проходу
+                    row += " ->"
                 elif self.grid[y][x] == WALL:
                     row += "███"  # Відображення стін
                 else:

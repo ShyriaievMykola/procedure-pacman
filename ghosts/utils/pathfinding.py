@@ -1,4 +1,5 @@
 import heapq
+import constants
 
 def a_star(grid, start, goal):
     """
@@ -19,7 +20,7 @@ def a_star(grid, start, goal):
         results = []
         for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
             nx, ny = x + dx, y + dy
-            if 0 <= nx < len(grid[0]) and 0 <= ny < len(grid) and grid[ny][nx] == 0:
+            if 0 <= nx < len(grid[0]) and 0 <= ny < len(grid) and grid[ny][nx] == constants.TUNNEL:
                 results.append((nx, ny))
         return results
 
