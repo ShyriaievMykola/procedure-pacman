@@ -1,5 +1,5 @@
 from constants import *
-import keyboard 
+import pygame
 from map.game_map import GameMap
 import time
 
@@ -27,7 +27,7 @@ def get_spawn_position(map : GameMap
     
     for y, row in enumerate(map.grid):
         for x, cell in enumerate(row):
-            if cell == TUNNEL:
+            if cell == TUNNEL and map.pellet_grid[y][x] == PELLET:
                 return x, y
 
 def resolve_pend(map : GameMap
@@ -52,7 +52,7 @@ def eat(position : tuple[int, int], # Точка звідки їмо табле�
         map : GameMap
         ):
     x, y = position
-    grid = map.grid
+    grid = map.pellet_grid
     if (x,y) == map.passage_left:
         go_through_passage_left(map)
     elif (x,y) == map.passage_right:
@@ -63,7 +63,6 @@ def eat(position : tuple[int, int], # Точка звідки їмо табле�
         eat_power_pellet(map, position)
     elif grid[y][x] == FRUIT:
         eat_fruit(map, position)
-    # Сюди додати поїдання таблеток, бонусів і т.д.
 
 
 def go_through_passage_left(map : GameMap):
@@ -93,8 +92,8 @@ def eat_power_pellet(map : GameMap,
                     ):
     global empowered, last_power_time
     empty_cell(map, position)
-    empowered = True
     last_power_time = time.time()
+    empowered = True
 
 def touch_ghost():
     global health, invincible, invincible_start_time
@@ -113,17 +112,20 @@ def eat_ghost():
 def empty_cell( map : GameMap,
                 position : tuple[int, int] # Точка звідки їмо таблетку
                 ):
-    pass # Згодом коли пойму логіку то додам
+    grid = map.pellet_grid
+    x, y = position
+    grid[y][x] = EMPTY
 
-def control(): # Слід змінити під pygame
+def control():
     global pending_direction
-    if keyboard.is_pressed('w'):
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_w] or keys[pygame.K_UP]: 
         pending_direction = (0, -1)
-    elif keyboard.is_pressed('s'):
+    elif keys[pygame.K_s] or keys[pygame.K_DOWN]: 
         pending_direction = (0, 1)
-    elif keyboard.is_pressed('a'):
+    elif keys[pygame.K_a] or keys[pygame.K_LEFT]: 
         pending_direction = (-1, 0)
-    elif keyboard.is_pressed('d'):
+    elif keys[pygame.K_d] or keys[pygame.K_RIGHT]: 
         pending_direction = (1, 0)
 
 def maybe_lose_power():

@@ -4,6 +4,7 @@ from map.map_generator import MapGenerator
 from map.map_visualization import MapVisualization
 from seeded_random import SeededRandom
 from visualisation.visualizer import Visualizer
+from visualisation.pacman_visualizer import PacManVisualizer
 from constants import *
 import pacman
 import random
@@ -13,54 +14,57 @@ import time
 def main():
     app_args = parse_arguments()
 
-    print("Hello, World!")
-    print()
+    seed = None
+
+    if app_args.seed is not None:
+        seed = app_args.seed
+
+    map = get_map(seed)
+    print(f"using seed: {map.seed}")
+
+    if app_args.test_texture_map:
+        test_texture_map(map)
 
     if app_args.test_map:
-        test_map_generation()
+        test_map_generation(map)
 
     if app_args.test_visualization:
-        test_map_visualization()
+        test_visualization(map)
 
     if app_args.test_pacman:
-        test_pacman()
+        test_pacman(map)
+
+    if app_args.test_ghost:
+        test_ghost()
+    
+    if len(app_args) == 0:
+        test_visualization(map)
 
 def parse_arguments():    
     parser = argparse.ArgumentParser(description="Procedural Pac-Man Maze Generator")
     parser.add_argument('--test-map',action='store_true', help='Test map generation')
-    parser.add_argument('--test-visualization',action='store_true', help='Test map visualization')
+    parser.add_argument('--test-visualization',action='store_true', help='Test visualization')
     parser.add_argument('--test-pacman',action='store_true', help='Test pacman movement')
+    parser.add_argument('--test-ghost', action='store_true', help='Test ghost behavior')
+    parser.add_argument('--test-texture-map',action='store_true', help='Test texture map')
+    parser.add_argument('--seed', type=int, help='Set seed')
     return parser.parse_args()
 
-def get_map():
+def get_map(seed=None):
     grid_width = 21
     grid_height = 36
-    seed = None
+    seed = seed
 
     return MapGenerator.generate_map(grid_width, grid_height, seed)
 
-
-def test_map_generation():
-    map = get_map()
-
+def test_map_generation(map):
     MapVisualization.display_map(map)
-    
-    
-    
-# Гра в окремому вікні
-def test_map_visualization():
-    map = get_map()
-    visualizer = Visualizer(map)
-    visualizer.run()
 
-    srand = SeededRandom(seed=random.randint(0, 100000))
-    generator = MapGenerator(grid_width, grid_height, srand=srand)
-    generator.generate_map()
-    generator.print_grid()
+def test_visualization(map):
+    game = PacManVisualizer(map)
+    game.run()
 
-
-def test_pacman():
-    map = get_map()
+def test_pacman(map):
     pacman.position = pacman.get_spawn_position(map)
     fps = 10
     while True:
@@ -70,6 +74,38 @@ def test_pacman():
         map.print_grid(pacman.position)
         print(f"Points: {pacman.points}")
 
+def test_ghost():
+    map = get_map()
+    # Ініціалізація Pacman
+    pacman.position = pacman.get_spawn_position(map)
+    pacman.movement_direction = (0, 0)
+    pacman.pending_direction = (0, 0)
+    pacman.points = 0
+
+    from ghosts.ghost_manager import GhostManager
+    ghost_manager = GhostManager(map)
+    fps = 10
+    while True:
+        time.sleep(1 / fps)
+        pacman.control()
+        pacman.resolve_pend(map)
+        os.system('cls')
+        map.print_grid(pacman.position, ghost_manager.ghosts[0].position)
+        print(f"Points: {pacman.points}, Ghost Position: {ghost_manager.ghosts[0].position}, Strategy: {type(ghost_manager.ghosts[0].strategy)}")
+        ghost_manager.update(pacman)
+        
+def test_texture_map(map):
+    texture_map = map.get_texture_map()
+    for y in range(map.height):
+        row = ""
+        for x in range(map.width):
+            
+            if (texture_map[y][x] < 10 and texture_map[y][x] != -1):
+                row += f" {texture_map[y][x]} "
+            else:
+                row += f"{texture_map[y][x]} "
+
+        print(row)
+
 if __name__ == "__main__":
-    test_pacman()
-    input()
+    main()
