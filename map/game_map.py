@@ -15,26 +15,30 @@ class GameMap:
 
     # Друк карти в консоль
     def print_grid(self, pacman_position=None, ghost_positions=None):
-
+        """
+        Виводить ігрову карту в консоль із візуалізацією Pacman і привидів.
+        :param pacman_position: Позиція Pacman (x, y).
+        :param ghost_positions: Список позицій привидів [(x1, y1), (x2, y2), ...].
+        """
         for y in range(self.height):
             row = ""
             for x in range(self.width):
                 if pacman_position is not None and (x, y) == pacman_position:
-                    row += " ● " 
-                elif ghost_positions is not None and (x, y) == ghost_positions:
-                    row += " g "
+                    row += " ● "  # Відображення Pacman
+                elif ghost_positions is not None and (x, y) in ghost_positions:
+                    row += " g "  # Відображення привида
                 elif (self.ghost_x[0] <= x <= self.ghost_x[1] and self.ghost_y[0] <= y <= self.ghost_y[1]):
-                    row += " G "
+                    row += " G "  # Відображення будиночка привидів
                 elif (x, y) == self.ghost_door:
-                    row += " D "
+                    row += " D "  # Відображення дверей будиночка привидів
                 elif (x, y) == self.passage_left:
-                    row += " L "
+                    row += " L "  # Відображення лівого проходу
                 elif (x, y) == self.passage_right:
-                    row += " R "
+                    row += " R "  # Відображення правого проходу
                 elif self.grid[y][x] == WALL:
-                    row += "███"
+                    row += "███"  # Відображення стін
                 else:
-                    row += "   "
+                    row += "   "  # Порожній простір
             print(row)
 
     # отримання карти для промальовування стін
@@ -61,6 +65,6 @@ class GameMap:
                     
                     texture_map[y][x] = mask
         return texture_map
-        
+
 
 

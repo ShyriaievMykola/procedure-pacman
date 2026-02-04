@@ -9,6 +9,7 @@ class Ghost:
         self.color = color
         self.strategy = ScatterBehavior(color, len(grid[0]), len(grid))
         self.target_tile = self.position
+        self.scatter_target = self.strategy.get_target(self, None)
 
     def move(self):
         path = a_star(self.grid, self.position, self.target_tile)
@@ -19,7 +20,7 @@ class Ghost:
     def change_strategy(self, new_strategy: BaseBehavior):
         self.strategy = new_strategy
 
-    def get_target_tile(self, pacman_position):
+    def get_target_tile(self, pacman):
         if self.strategy:
-            self.target_tile = self.strategy.get_target(pacman_position)
+            self.target_tile = self.strategy.get_target(self, pacman)
         return self.target_tile

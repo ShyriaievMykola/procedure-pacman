@@ -88,7 +88,10 @@ def test_ghost():
         pacman.control()
         pacman.resolve_pend(map.grid)
         os.system('cls')
-        map.print_grid(pacman.position, ghost_manager.ghosts[0].position)
+        map.print_grid(
+        pacman.position,
+        [ghost.position for ghost in ghost_manager.ghosts]
+        )
         print(f"Points: {pacman.points}, Ghost Position: {ghost_manager.ghosts[0].position}, Strategy: {type(ghost_manager.ghosts[0].strategy)}")
         ghost_manager.update(pacman)
 
