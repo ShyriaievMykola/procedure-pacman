@@ -2,7 +2,8 @@ from constants import *
 import pygame
 from map.game_map import GameMap
 import time
-
+import keyboard
+pygame.event.recent = []
 # Будем робити по ООП, тут буде зазначений стан і позиція пекмена
 position : tuple[int, int] 
 movement_direction : tuple[int, int] = (0, 0) # Спочатку пекмен стоїть на місці
@@ -129,6 +130,17 @@ def control():
             elif event.key in (pygame.K_d, pygame.K_RIGHT):
                 pending_direction = (1, 0)
 
+def old_control():
+    global pending_direction
+    if keyboard.is_pressed('w') or keyboard.is_pressed('up'):
+        pending_direction = (0, -1)
+    elif keyboard.is_pressed('s') or keyboard.is_pressed('down'):
+        pending_direction = (0, 1)
+    elif keyboard.is_pressed('a') or keyboard.is_pressed('left'):
+        pending_direction = (-1, 0)
+    elif keyboard.is_pressed('d') or keyboard.is_pressed('right'):
+        pending_direction = (1, 0)
+
 def maybe_lose_power():
     global empowered
     if time.time() - last_power_time > power_span:
@@ -141,6 +153,14 @@ def maybe_lose_invincibility():
 
 def update(map : GameMap):
     control()
+    resolve_pend(map)
+    if empowered:
+        maybe_lose_power()
+    if invincible:
+        maybe_lose_invincibility()
+
+def old_update(map : GameMap):
+    old_control()
     resolve_pend(map)
     if empowered:
         maybe_lose_power()
