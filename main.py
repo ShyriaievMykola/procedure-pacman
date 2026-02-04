@@ -10,7 +10,6 @@ import pacman
 import random
 import os
 import time
-
 def main():
     app_args = parse_arguments()
 
@@ -37,7 +36,7 @@ def main():
     if app_args.test_ghost:
         test_ghost()
     
-    if len(app_args) == 0:
+    if len(app_args._get_args()) == 0:
         test_visualization(map)
 
 def parse_arguments():    
@@ -69,7 +68,7 @@ def test_pacman(map):
     fps = 10
     while True:
         time.sleep(1 / fps)
-        pacman.update(map)
+        pacman.old_update(map)
         os.system('cls')
         map.print_grid(pacman.position)
         print(f"Points: {pacman.points}")
@@ -87,8 +86,7 @@ def test_ghost():
     fps = 10
     while True:
         time.sleep(1 / fps)
-        pacman.control()
-        pacman.resolve_pend(map)
+        pacman.old_update(map)
         os.system('cls')
         map.print_grid(pacman.position, ghost_manager.ghosts[0].position)
         print(f"Points: {pacman.points}, Ghost Position: {ghost_manager.ghosts[0].position}, Strategy: {type(ghost_manager.ghosts[0].strategy)}")
@@ -108,4 +106,9 @@ def test_texture_map(map):
         print(row)
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except:
+        import traceback
+        traceback.print_exc()
+        input("Press Enter to exit...")
