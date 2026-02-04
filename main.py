@@ -37,7 +37,7 @@ def main():
     if app_args.test_ghost:
         test_ghost()
     
-    if len(app_args) == 0:
+    if len(app_args._get_args()) == 0:
         test_visualization(map)
 
 def parse_arguments():    
@@ -108,4 +108,9 @@ def test_texture_map(map):
         print(row)
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except:
+        import traceback
+        traceback.print_exc()
+        input("Press Enter to exit...")

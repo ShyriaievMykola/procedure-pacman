@@ -118,15 +118,16 @@ def empty_cell( map : GameMap,
 
 def control():
     global pending_direction
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_w] or keys[pygame.K_UP]: 
-        pending_direction = (0, -1)
-    elif keys[pygame.K_s] or keys[pygame.K_DOWN]: 
-        pending_direction = (0, 1)
-    elif keys[pygame.K_a] or keys[pygame.K_LEFT]: 
-        pending_direction = (-1, 0)
-    elif keys[pygame.K_d] or keys[pygame.K_RIGHT]: 
-        pending_direction = (1, 0)
+    for event in pygame.event.recent:
+        if event.type == pygame.KEYDOWN:
+            if event.key in (pygame.K_w, pygame.K_UP):
+                pending_direction = (0, -1)
+            elif event.key in (pygame.K_s, pygame.K_DOWN):
+                pending_direction = (0, 1)
+            elif event.key in (pygame.K_a, pygame.K_LEFT):
+                pending_direction = (-1, 0)
+            elif event.key in (pygame.K_d, pygame.K_RIGHT):
+                pending_direction = (1, 0)
 
 def maybe_lose_power():
     global empowered
