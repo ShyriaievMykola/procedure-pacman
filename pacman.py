@@ -37,12 +37,16 @@ def resolve_pend(map : GameMap
     global movement_direction, pending_direction, position
     new_x = position[0] + pending_direction[0]
     new_y = position[1] + pending_direction[1]
+    new_x = max(0, min(map.width - 1, new_x))
+    new_y = max(0, min(map.height - 1, new_y))
     if maze[new_y][new_x] != WALL: # Якщо можна рухатись в напрямку очікування
         movement_direction = pending_direction
         position = (new_x, new_y)
     else: # Інакше пробуємо рухатись в поточному напрямку поки не зможемо задовільнити очікування
         new_x = position[0] + movement_direction[0]
         new_y = position[1] + movement_direction[1]
+        new_x = max(0, min(map.width - 1, new_x))
+        new_y = max(0, min(map.height - 1, new_y))
         if maze[new_y][new_x] != WALL:
             position = (new_x, new_y)
         else:    # Вдарились в стіну
