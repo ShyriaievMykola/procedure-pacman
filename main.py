@@ -94,6 +94,7 @@ def test_ghost():
         )
         print(f"Points: {pacman.points}, Ghost Position: {ghost_manager.ghosts[0].position}, Strategy: {type(ghost_manager.ghosts[0].strategy)}")
         ghost_manager.update(pacman)
+        
 
 def test_texture_map(map):
     texture_map = map.get_texture_map()
