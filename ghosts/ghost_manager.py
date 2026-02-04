@@ -1,6 +1,8 @@
 from ghosts.ghost import Ghost
 from ghosts.behaviors.chase_behavior import ChaseBehavior
 from ghosts.behaviors.scatter_behavior import ScatterBehavior
+from ghosts.behaviors.frightened_behavior import FrightenedBehavior
+from ghosts.behaviors.eaten_behavior import EatenBehavior
 import time
 
 class GhostManager:
@@ -17,13 +19,39 @@ class GhostManager:
         # Визначаємо координати будиночка для привидів
         self.map_width = len(self.grid[0])
         self.map_height = len(self.grid)
-        self.ghost_house_center = map.ghost_door
+        self.ghost_door = map.ghost_door
 
-        # Створюємо привидів у будиночку
-        self.ghosts.append(Ghost(self.ghost_house_center, "orange", self.grid))
-        self.ghosts.append(Ghost(self.ghost_house_center, "blue", self.grid))
-        self.ghosts.append(Ghost(self.ghost_house_center, "pink", self.grid))
-        self.ghosts.append(Ghost(self.ghost_house_center, "red", self.grid))
+        start_x, end_x = map.ghost_x
+        start_y, end_y = map.ghost_y
+        
+        # Вираховуємо центральну лінію по вертикалі
+        center_y = (start_y + end_y) // 2
+
+        # РОЗКОМЕНТУВАТИ КОЛИ БУДУТЬ ДВЕРІ
+
+        # Створюємо список різних позицій для привидів всередині будиночка
+        # Ми беремо точки вздовж центральної лінії будиночка
+        # spawn_positions = [
+        #     (start_x + 1, center_y),
+        #     (end_x - 1, center_y),
+        #     (start_x + 2, center_y),
+        #     ((start_x + end_x) // 2, center_y) 
+        # ]
+
+        # colors = ["red", "pink", "blue", "orange"]
+        # for i in range(len(colors)):
+        #     pos = spawn_positions[i]
+        #     color = colors[i]
+        #     if color == "red":
+        #         start_pos = self.ghost_door
+        #     else:
+        #         start_pos = pos
+                
+        #     self.ghosts.append(Ghost(start_pos, color, self.grid))
+        self.ghosts.append(Ghost(self.ghost_door, "red", self.grid))
+        self.ghosts.append(Ghost(self.ghost_door, "pink", self.grid))
+        self.ghosts.append(Ghost(self.ghost_door, "blue", self.grid))
+        self.ghosts.append(Ghost(self.ghost_door, "orange", self.grid))
 
     def update(self, pacman):
         current_time = time.time()
