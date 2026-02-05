@@ -11,3 +11,4 @@ class Colors:
     PACMAN = (255, 255, 0)
     SCORE_TEXT = (255, 255, 255)
     UI_FONT = None
+    FRUIT = (255, 100, 100)
