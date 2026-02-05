@@ -89,10 +89,13 @@ def test_ghost():
         pacman.old_update(map)
         os.system('cls')
         map.print_grid(
-        pacman.position,
-        [ghost.position for ghost in ghost_manager.ghosts]
+            pacman.position,
+            [ghost.position for ghost in ghost_manager.ghosts],
+            pacman.points,
+            pacman.health
         )
-        print(f"Points: {pacman.points}, Ghost Position: {ghost_manager.ghosts[0].position}, Strategy: {type(ghost_manager.ghosts[0].strategy)}")
+        print(f"Ghost Position: {ghost_manager.ghosts[0].position}, Strategy: {type(ghost_manager.ghosts[0].strategy)}")
+        print(f"Is empowered: {pacman.empowered}")
         ghost_manager.update(pacman)
         
 

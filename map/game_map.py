@@ -1,4 +1,4 @@
-from constants import WALL
+from constants import WALL, PELLET, POWER, FRUIT
 
 class GameMap:
     def __init__(self, seed, height, width, grid, pellet_grid, ghost_x, ghost_y, ghost_door, passage_left, passage_right):
@@ -14,32 +14,30 @@ class GameMap:
         self.passage_right = passage_right
 
     # Друк карти в консоль
-    def print_grid(self, pacman_position=None, ghost_positions=None):
-        """
-        Виводить ігрову карту в консоль із візуалізацією Pacman і привидів.
-        :param pacman_position: Позиція Pacman (x, y).
-        :param ghost_positions: Список позицій привидів [(x1, y1), (x2, y2), ...].
-        """
+    def print_grid(self, pacman_position=None, ghost_positions=None, points=0, health=3):
         for y in range(self.height):
             row = ""
             for x in range(self.width):
+                # Пріоритет відображення: Пакмен -> Привиди -> Об'єкти карти -> Таблетки
                 if pacman_position is not None and (x, y) == pacman_position:
-                    row += " ● "  # Відображення Pacman
+                    row += " ● "
                 elif ghost_positions is not None and (x, y) in ghost_positions:
-                    row += " g "  # Відображення привида
+                    row += " g "
                 elif (self.ghost_x[0] <= x <= self.ghost_x[1] and self.ghost_y[0] <= y <= self.ghost_y[1]):
-                    row += " G "  # Відображення будиночка привидів
+                    row += " G "
                 elif (x, y) == self.ghost_door:
-                    row += " D "  # Відображення дверей будиночка привидів
-                elif (x, y) == self.passage_left:
-                    row += "<- "
-                elif (x, y) == self.passage_right:
-                    row += " ->"
+                    row += " D "
                 elif self.grid[y][x] == WALL:
-                    row += "███"  # Відображення стін
+                    row += "███"
                 else:
-                    row += "   "  # Порожній простір
+                    # Відображення таблеток, якщо клітинка порожня
+                    pellet = self.pellet_grid[y][x]
+                    if pellet == PELLET: row += " . "
+                    elif pellet == POWER: row += " o "
+                    elif pellet == FRUIT: row += " f "
+                    else: row += "   "
             print(row)
+        print(f"\nSCORE: {points} | LIVES: {health}")
 
     # отримання карти для промальовування стін
     def get_texture_map(self):
