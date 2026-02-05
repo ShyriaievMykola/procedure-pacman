@@ -49,10 +49,10 @@ class GhostManager:
         #     else:
         #         start_pos = pos
                 
-        #     self.ghosts.append(Ghost(start_pos, color, self.grid))
-        # self.ghosts.append(Ghost(self.ghost_door, "red", self.grid))
-        # self.ghosts.append(Ghost(self.ghost_door, "pink", self.grid))
-        # self.ghosts.append(Ghost(self.ghost_door, "blue", self.grid))
+        # self.ghosts.append(Ghost(start_pos, color, self.grid))
+        self.ghosts.append(Ghost(self.ghost_door, "red", self.grid))
+        self.ghosts.append(Ghost(self.ghost_door, "pink", self.grid))
+        self.ghosts.append(Ghost(self.ghost_door, "blue", self.grid))
         self.ghosts.append(Ghost(self.ghost_door, "orange", self.grid))
 
     def update(self, pacman):
