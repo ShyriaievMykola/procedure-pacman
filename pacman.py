@@ -2,7 +2,8 @@ from constants import *
 import pygame
 from map.game_map import GameMap
 import time
-
+import keyboard
+pygame.event.recent = []
 # Будем робити по ООП, тут буде зазначений стан і позиція пекмена
 position : tuple[int, int] 
 movement_direction : tuple[int, int] = (0, 0) # Спочатку пекмен стоїть на місці
@@ -36,12 +37,16 @@ def resolve_pend(map : GameMap
     global movement_direction, pending_direction, position
     new_x = position[0] + pending_direction[0]
     new_y = position[1] + pending_direction[1]
+    new_x = max(0, min(map.width - 1, new_x))
+    new_y = max(0, min(map.height - 1, new_y))
     if maze[new_y][new_x] != WALL: # Якщо можна рухатись в напрямку очікування
         movement_direction = pending_direction
         position = (new_x, new_y)
     else: # Інакше пробуємо рухатись в поточному напрямку поки не зможемо задовільнити очікування
         new_x = position[0] + movement_direction[0]
         new_y = position[1] + movement_direction[1]
+        new_x = max(0, min(map.width - 1, new_x))
+        new_y = max(0, min(map.height - 1, new_y))
         if maze[new_y][new_x] != WALL:
             position = (new_x, new_y)
         else:    # Вдарились в стіну
@@ -118,14 +123,26 @@ def empty_cell( map : GameMap,
 
 def control():
     global pending_direction
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_w] or keys[pygame.K_UP]: 
+    for event in pygame.event.recent:
+        if event.type == pygame.KEYDOWN:
+            if event.key in (pygame.K_w, pygame.K_UP):
+                pending_direction = (0, -1)
+            elif event.key in (pygame.K_s, pygame.K_DOWN):
+                pending_direction = (0, 1)
+            elif event.key in (pygame.K_a, pygame.K_LEFT):
+                pending_direction = (-1, 0)
+            elif event.key in (pygame.K_d, pygame.K_RIGHT):
+                pending_direction = (1, 0)
+
+def old_control():
+    global pending_direction
+    if keyboard.is_pressed('w') or keyboard.is_pressed('up'):
         pending_direction = (0, -1)
-    elif keys[pygame.K_s] or keys[pygame.K_DOWN]: 
+    elif keyboard.is_pressed('s') or keyboard.is_pressed('down'):
         pending_direction = (0, 1)
-    elif keys[pygame.K_a] or keys[pygame.K_LEFT]: 
+    elif keyboard.is_pressed('a') or keyboard.is_pressed('left'):
         pending_direction = (-1, 0)
-    elif keys[pygame.K_d] or keys[pygame.K_RIGHT]: 
+    elif keyboard.is_pressed('d') or keyboard.is_pressed('right'):
         pending_direction = (1, 0)
 
 def maybe_lose_power():
@@ -140,6 +157,14 @@ def maybe_lose_invincibility():
 
 def update(map : GameMap):
     control()
+    resolve_pend(map)
+    if empowered:
+        maybe_lose_power()
+    if invincible:
+        maybe_lose_invincibility()
+
+def old_update(map : GameMap):
+    old_control()
     resolve_pend(map)
     if empowered:
         maybe_lose_power()

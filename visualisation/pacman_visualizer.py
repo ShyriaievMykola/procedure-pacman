@@ -35,11 +35,10 @@ class PacManVisualizer(Visualizer):
                 self.render_pos[i] = pacman.position[i]
             else:
                 self.render_pos[i] = self.prev_pos[i] + (diff * progress)
-
+        pacman.control()
         if self.move_timer >= G.PACMAN_SPEED_MS:
             self.prev_pos = list(pacman.position)
             pacman.update(self.map)
-
             px, py = pacman.position
             if self.map.grid[py][px] == TUNNEL and (px, py) not in self.eaten_pellets:
                 self.eaten_pellets.add((px, py))
@@ -74,7 +73,8 @@ class PacManVisualizer(Visualizer):
         clock = pygame.time.Clock()
         while True:
             dt = clock.tick(60)
-            for e in pygame.event.get():
+            pygame.event.recent = pygame.event.get()
+            for e in pygame.event.recent:
                 if e.type == pygame.QUIT or (e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE):
                     pygame.quit(); sys.exit()
 
