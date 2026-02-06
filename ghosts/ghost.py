@@ -1,6 +1,8 @@
 from ghosts.behaviors.base_behavior import BaseBehavior
 from ghosts.behaviors.scatter_behavior import ScatterBehavior
 from ghosts.utils.pathfinding import a_star
+from ghosts.behaviors.frightened_behavior import FrightenedBehavior
+from ghosts.behaviors.eaten_behavior import EatenBehavior
 
 class Ghost:
     def __init__(self, position, color, grid):
@@ -24,3 +26,8 @@ class Ghost:
         if self.strategy:
             self.target_tile = self.strategy.get_target(self, pacman)
         return self.target_tile
+    
+    def is_frightened(self) -> bool:
+        return isinstance(self.strategy, FrightenedBehavior)
+    def is_eaten(self) -> bool:
+        return isinstance(self.strategy, EatenBehavior)

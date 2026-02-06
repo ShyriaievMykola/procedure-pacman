@@ -28,7 +28,7 @@ class GameConfig:
     CAMERA_SMOOTHING = 0.1      # Плавність камери
     
     # Привиди
-    GHOST_SPEED_MS = 190                # Швидкість кроку привидів
+    GHOST_SPEED_MS = 300                # Швидкість кроку привидів
     GHOST_EYE_OFFSET_X_DIVISOR = 3      # Відступ очей по X (radius // 3)
     GHOST_EYE_OFFSET_Y_DIVISOR = 4      # Відступ очей по Y (radius // 4)
     GHOST_EYE_RADIUS_DIVISOR = 4        # Радіус ока (radius // 4)

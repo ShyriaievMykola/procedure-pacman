@@ -67,7 +67,7 @@ class GhostManager:
         
         if self.is_frightened:
             for ghost in self.ghosts:
-                if isinstance(ghost.strategy, FrightenedBehavior) and ghost.position == pacman.position:
+                if isinstance(ghost.strategy, FrightenedBehavior) and pacman.does_touch_ghost(ghost):
                     ghost.change_strategy(EatenBehavior(ghost, self.map_width, self.map_height, self.ghost_door))
 
         for ghost in self.ghosts:
