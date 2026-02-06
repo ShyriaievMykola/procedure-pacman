@@ -31,7 +31,7 @@ def main():
         test_visualization(map)
 
     if app_args.test_pacman:
-        test_pacman(map)
+        test_pacman()
 
     if app_args.test_ghost:
         test_ghost()
@@ -68,7 +68,7 @@ def test_pacman(map):
     fps = 10
     while True:
         time.sleep(1 / fps)
-        pacman.old_update(map)
+        pacman.old_update(map, None)
         os.system('cls')
         map.print_grid(pacman.position)
         print(f"Points: {pacman.points}")
@@ -86,12 +86,19 @@ def test_ghost():
     fps = 10
     while True:
         time.sleep(1 / fps)
-        pacman.old_update(map)
+        pacman.old_update(map, ghost_manager)
         os.system('cls')
-        map.print_grid(pacman.position, ghost_manager.ghosts[0].position)
-        print(f"Points: {pacman.points}, Ghost Position: {ghost_manager.ghosts[0].position}, Strategy: {type(ghost_manager.ghosts[0].strategy)}")
+        map.print_grid(
+            pacman.position,
+            [ghost.position for ghost in ghost_manager.ghosts],
+            pacman.points,
+            pacman.health
+        )
+        print(f"Ghost Position: {ghost_manager.ghosts[0].position}, Strategy: {type(ghost_manager.ghosts[0].strategy)}")
+        print(f"Is empowered: {pacman.empowered}")
         ghost_manager.update(pacman)
         
+
 def test_texture_map(map):
     texture_map = map.get_texture_map()
     for y in range(map.height):

@@ -1,39 +1,20 @@
 from ghosts.behaviors.base_behavior import BaseBehavior
-from utils.pathfinding import a_star
 
 class EatenBehavior(BaseBehavior):
-    def __init__(self, ghost_house_position):
+    def __init__(self, ghost, map_width, map_height, ghost_house):
         """
-        Логіка Eaten: повернення до будинку привидів.
-        :param ghost_house_position: Позиція будинку привидів (x, y).
-        """
-        self.ghost_house_position = ghost_house_position
-
-    def get_target(self, ghost):
-        """
-        Повертає позицію будинку привидів як ціль.
+        Логіка Eaten: привид повертається у свій будинок.
         :param ghost: Об'єкт привида.
-        :return: Точка (x, y).
+        :param map_width: Ширина карти.
+        :param map_height: Висота карти.
         """
-        return self.ghost_house_position
+        self.color = ghost.color
+        self.map_width = map_width
+        self.map_height = map_height
+        self.ghost_house = ghost_house
 
-    def move(self, ghost, grid):
+    def get_target(self, ghost, pacman):
         """
-        Рух до будинку привидів.
-        :param ghost: Об'єкт привида.
-        :param grid: Ігрова карта.
-        :return: Нова позиція (x, y).
+        Повертає цільову точку для привида, яка є його будинком.
         """
-        path = a_star(grid, (ghost.x, ghost.y), self.ghost_house_position)
-        if path:
-            return path[0]  # Повертаємо наступну точку на шляху
-        return ghost.x, ghost.y  # Якщо шлях не знайдено, залишаємося на місці
-
-    def on_state_change(self, ghost, new_state):
-        """
-        Якщо привид досягає будинку, змінюємо стан на Scatter.
-        :param ghost: Об'єкт привида.
-        :param new_state: Новий стан.
-        """
-        if (ghost.x, ghost.y) == self.ghost_house_position:
-            ghost.change_state("scatter")
+        return self.ghost_house

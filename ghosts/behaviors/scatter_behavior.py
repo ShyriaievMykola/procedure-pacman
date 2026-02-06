@@ -12,12 +12,12 @@ class ScatterBehavior(BaseBehavior):
         self.map_width = map_width
         self.map_height = map_height
 
-    def get_target(self, pacman_position):
+    def get_target(self, ghost, pacman):
         """
         Повертає фіксовану точку для Scatter залежно від кольору привида.
         :param ghost: Об'єкт привида (не використовується в Scatter).
         :param grid: Ігрова карта (не використовується в Scatter).
-        :param pacman_position: Позиція Pacman (не використовується в Scatter).
+        :param pacman: Об'єкт Pacman.
         :return: Точка (x, y).
         """
         if self.color == "red":
