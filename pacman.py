@@ -70,7 +70,7 @@ def eat(position : tuple[int, int], # Точка звідки їмо табле�
     if ghost_manager is not None:
         touched_ghosts = get_touched_ghost(position, ghost_manager)
         for ghost in touched_ghosts:
-            touch_ghost(ghost)
+            touch_ghost(ghost_manager, ghost)
     if (x,y) == map.passage_left:
         go_through_passage_left(map)
     elif (x,y) == map.passage_right:
@@ -93,10 +93,6 @@ def get_touched_ghost(position : tuple[int, int], # Позиція пекмен�
     touching = []
     for ghost in ghost_manager.ghosts:
         if does_touch_ghost(ghost):
-            if ghost.position == position:
-                print("Touched ghost at current position")
-            if ghost.position == old_position:
-                print("Touched ghost at old position")
             touching.append(ghost)
     return touching
 
@@ -141,10 +137,10 @@ def eat_power_pellet(map : GameMap,
     last_power_time = time.time()
     empowered = True
 
-def touch_ghost(ghost : Ghost):
+def touch_ghost(ghost_manager : GhostManager, ghost : Ghost):
     global health, invincible, invincible_start_time
     if empowered and ghost.is_frightened():
-        eat_ghost()
+        eat_ghost(ghost_manager, ghost)
     elif not invincible and not ghost.is_eaten():
         health -= 1
         if health <= 0:
@@ -158,9 +154,10 @@ def game_over():
 def victory():
     raise NotImplementedError("Victory screen is not implemented yet.")
 
-def eat_ghost(): # Логіка убивства знаходиться у ghosts.ghost_manager, тут лише нараховуємо очки
+def eat_ghost(ghost_manager : GhostManager, ghost : Ghost):
     global points
     points += points_for_ghost
+    ghost_manager.be_eaten(ghost)
 
 def empty_cell( map : GameMap,
                 position : tuple[int, int] # Точка звідки їмо таблетку
