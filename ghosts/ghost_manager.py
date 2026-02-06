@@ -77,6 +77,8 @@ class GhostManager:
         if not self.is_frightened:
             if current_time - self.last_switch_time >= self.switch_interval:
                 for ghost in self.ghosts:
+                    if isinstance(ghost.strategy, EatenBehavior):
+                        continue
                     if isinstance(ghost.strategy, ScatterBehavior):
                         ghost.change_strategy(ChaseBehavior(ghost, self.map_width, self.map_height))
                     else:
