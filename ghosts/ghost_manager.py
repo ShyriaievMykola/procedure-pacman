@@ -90,6 +90,9 @@ class GhostManager:
         else:
             ghost.change_strategy(ChaseBehavior(ghost, self.map_width, self.map_height))
 
+    def be_eaten(self, ghost):
+        ghost.change_strategy(EatenBehavior(ghost, self.map_width, self.map_height, self.ghost_door))
+
     def reset_ghosts(self):
         self.current_interval_index = 0
         self.last_switch_time = time.time()
