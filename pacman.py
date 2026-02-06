@@ -9,7 +9,7 @@ from ghosts.ghost_manager import GhostManager
 pygame.event.recent = []
 # Будем робити по ООП, тут буде зазначений стан і позиція пекмена
 position : tuple[int, int] 
-old_position : tuple[int, int]
+old_position : tuple[int, int] # Позиція на попередньому кроці
 movement_direction : tuple[int, int] = (0, 0) # Спочатку пекмен стоїть на місці
 pending_direction : tuple[int, int] = (0, 0) # Напрямок, в який гравець хоче рухатись
                                             # (користувач вказав напрямок але поки там стіна)
@@ -83,7 +83,9 @@ def eat(position : tuple[int, int], # Точка звідки їмо табле�
         eat_fruit(map, position)
 
 def does_touch_ghost(ghost : Ghost):
-    return ghost.position == position or ghost.position == old_position
+    return ghost.position == position or (ghost.position == old_position and ghost.old_position == position)
+    # перша частина - дотик якщо в одній клітинці
+    # друга частина - дотик якщо пекмен і привид помінялись місцями за крок
 
 def get_touched_ghost(position : tuple[int, int], # Позиція пекмена
                     ghost_manager : GhostManager # Менеджер привидів
