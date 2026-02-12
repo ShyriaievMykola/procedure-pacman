@@ -10,6 +10,8 @@ import pacman
 import random
 import os
 import time
+import sys
+
 def main():
     app_args = parse_arguments()
 
@@ -36,7 +38,7 @@ def main():
     if app_args.test_ghost:
         test_ghost()
     
-    if len(app_args._get_args()) == 0:
+    if len(sys.argv) == 1:
         test_visualization(map)
 
 def parse_arguments():    
