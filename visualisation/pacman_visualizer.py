@@ -91,6 +91,21 @@ class PacManVisualizer(Visualizer):
             pts.append((center[0] + radius * math.cos(theta), center[1] - radius * math.sin(theta)))
         pygame.draw.polygon(self.screen, C.PACMAN, pts)
     
+    def draw_heart(self, x, y, size, color):
+        r = size // 4
+        pygame.draw.circle(self.screen, color, (x + r, y + r), r)
+        pygame.draw.circle(self.screen, color, (x + 3 * r, y + r), r)
+        pts = [(x, y + r), (x + 4 * r, y + r), (x + 2 * r, y + 4 * r)]
+        pygame.draw.polygon(self.screen, color, pts)
+
+    def draw_hud(self):
+        size = max(12, self.cell // 2)
+        spacing = size + 6
+        start_x = GC.TEXT_MARGIN
+        start_y = GC.TEXT_MARGIN + GC.TEXT_FONT_SIZE
+        for i in range(pacman.health):
+            self.draw_heart(start_x + i * spacing, start_y, size, C.HEART)
+    
     def run(self):
         clock = pygame.time.Clock()
         while True:
@@ -110,5 +125,6 @@ class PacManVisualizer(Visualizer):
             
             score = self.font.render(f"SCORE: {pacman.points}", True, C.SCORE_TEXT)
             self.screen.blit(score, (GC.TEXT_MARGIN, GC.TEXT_MARGIN))
+            self.draw_hud()
             
             pygame.display.flip()

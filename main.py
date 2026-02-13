@@ -10,6 +10,7 @@ import pacman
 import random
 import os
 import time
+
 def main():
     app_args = parse_arguments()
 
