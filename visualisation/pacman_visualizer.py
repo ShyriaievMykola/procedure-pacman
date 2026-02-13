@@ -89,12 +89,7 @@ class PacManVisualizer(Visualizer):
         for i in range(33):
             theta = math.radians(rot + angle + i * (360 - 2 * angle) / 32)
             pts.append((center[0] + radius * math.cos(theta), center[1] - radius * math.sin(theta)))
-        if pacman.invincible: # Дебаг для бачення стану, згодом треба видалити або замінити
-            pygame.draw.polygon(self.screen, (100, 100, 255), pts)
-        elif pacman.empowered:
-            pygame.draw.polygon(self.screen, (255, 100, 100), pts)
-        else:
-            pygame.draw.polygon(self.screen, C.PACMAN, pts)
+        pygame.draw.polygon(self.screen, C.PACMAN, pts)
     
     def run(self):
         clock = pygame.time.Clock()
