@@ -4,11 +4,10 @@ from .config import CameraConfig as CC, GraphicsConfig as GC
 from constants import WALL, PELLET, POWER, FRUIT
 
 class Visualizer:
-    def __init__(self, map_gen):
-        pygame.init()
+    def __init__(self, screen, map_gen):
+        self.screen = screen
         self.map = map_gen
-        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        
+
         self.cell = self.screen.get_width() // map_gen.width
         self.x_offset = (self.screen.get_width() - (map_gen.width * self.cell)) // 2
         

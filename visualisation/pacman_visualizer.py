@@ -10,8 +10,8 @@ from ghosts.ghost_manager import GhostManager
 from .ghost_visualizer import GhostVisualizer
 
 class PacManVisualizer(Visualizer):
-    def __init__(self, map_gen):
-        super().__init__(map_gen)
+    def __init__(self, screen, map_gen):
+        super().__init__(screen, map_gen)
         self.font = pygame.font.Font(None, GC.TEXT_FONT_SIZE)
         self.eaten_pellets = set()
         
@@ -94,13 +94,15 @@ class PacManVisualizer(Visualizer):
     
     def run(self):
         clock = pygame.time.Clock()
-        while True:
+        running = True
+        while running:
             dt = clock.tick(60)
             pygame.event.recent = pygame.event.get()
             for e in pygame.event.recent:
                 if e.type == pygame.QUIT or (e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE):
-                    pygame.quit()
-                    sys.exit()
+                    running = False
+                    break
+
             
             self.update_logic(dt)
             self.update_camera()

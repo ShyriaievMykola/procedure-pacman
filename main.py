@@ -1,7 +1,7 @@
 import argparse
-
 from map.map_generator import MapGenerator
 from map.map_visualization import MapVisualization
+from game_manager import GameManager
 from seeded_random import SeededRandom
 from visualisation.visualizer import Visualizer
 from visualisation.pacman_visualizer import PacManVisualizer
@@ -10,9 +10,12 @@ import pacman
 import random
 import os
 import time
+import sys
+import pygame
+import state
+
 def main():
     app_args = parse_arguments()
-
     seed = None
 
     if app_args.seed is not None:
@@ -35,8 +38,12 @@ def main():
 
     if app_args.test_ghost:
         test_ghost()
+
+    if app_args.test_menu:
+        GameManager()
+        state.game_instance.run()
     
-    if len(app_args._get_args()) == 0:
+    if len(sys.argv) == 1:
         test_visualization(map)
 
 def parse_arguments():    
@@ -46,6 +53,7 @@ def parse_arguments():
     parser.add_argument('--test-pacman',action='store_true', help='Test pacman movement')
     parser.add_argument('--test-ghost', action='store_true', help='Test ghost behavior')
     parser.add_argument('--test-texture-map',action='store_true', help='Test texture map')
+    parser.add_argument('--test-menu',action='store_true', help='Test menu')
     parser.add_argument('--seed', type=int, help='Set seed')
     return parser.parse_args()
 
@@ -98,7 +106,6 @@ def test_ghost():
         print(f"Is empowered: {pacman.empowered}")
         ghost_manager.update(pacman)
         
-
 def test_texture_map(map):
     texture_map = map.get_texture_map()
     for y in range(map.height):
