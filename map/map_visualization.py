@@ -4,34 +4,19 @@ from map.config import MapGeneratorConfig as cfg
 class MapVisualization:
     
     @staticmethod
-    def display_map(map, cell_size = 20):
-        pygame.init()
+    def display_map(screen, size, offsets, map):       
+        screen_width = size[0]
+        screen_height = size[1]
+        cell_size = min(screen_width // map.width, screen_height // map.height)
         
-        screen_width = map.width * cell_size
-        screen_height = map.height * cell_size
+        MapVisualization.render(map, screen, cell_size, offsets)
 
-        screen = pygame.display.set_mode((screen_width, screen_height))
-        pygame.display.set_caption("Procedural Pac-Man Maze Map Test")
-        clock = pygame.time.Clock()
-
-        running = True
-        while running:
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                
-            MapVisualization.render(map, screen, cell_size)
-            pygame.display.flip()
-            clock.tick(60) 
-        
-        pygame.quit()
 
     @staticmethod
-    def render(map, screen, cell_size):
+    def render(map, screen, cell_size, offsets):
         for y in range(map.height):
             for x in range(map.width):
-                rect = pygame.Rect(x * cell_size, y * cell_size, cell_size, cell_size)
+                rect = pygame.Rect(x * cell_size + offsets[0], y * cell_size + offsets[1], cell_size, cell_size)
                 
                 if (map.ghost_x[0] <= x <= map.ghost_x[1] and map.ghost_y[0] <= y <= map.ghost_y[1]):
                     color = (255, 0, 0)
@@ -47,21 +32,21 @@ class MapVisualization:
                 pygame.draw.rect(screen, color, rect)
                 
                 if (map.pellet_grid[y][x] == PELLET):
-                    ux = x*cell_size + cell_size//2
-                    uy = y*cell_size + cell_size//2
+                    ux = x*cell_size + cell_size//2 + offsets[0]
+                    uy = y*cell_size + cell_size//2 + offsets[1]
                     pygame.draw.circle(screen, (255, 255, 0), (ux, uy), 3)
                 elif (map.pellet_grid[y][x] == FRUIT):
-                    ux = x*cell_size + cell_size//2
-                    uy = y*cell_size + cell_size//2
+                    ux = x*cell_size + cell_size//2 + offsets[0]
+                    uy = y*cell_size + cell_size//2 + offsets[1]
                     pygame.draw.circle(screen, (0, 255, 0), (ux, uy), 3)
                 elif (map.pellet_grid[y][x] == POWER):
-                    ux = x*cell_size + cell_size//2
-                    uy = y*cell_size + cell_size//2
+                    ux = x*cell_size + cell_size//2 + offsets[0]
+                    uy = y*cell_size + cell_size//2 + offsets[1]
                     pygame.draw.circle(screen, (255, 205, 0), (ux, uy), 6)
                 
                 if (map.untouchable_zones[y][x] == True and cfg.DEBUG_VIEW):
-                    ux = x*cell_size + cell_size//2
-                    uy = y*cell_size + cell_size//2
+                    ux = x*cell_size + cell_size//2  + offsets[0]
+                    uy = y*cell_size + cell_size//2  + offsets[1]
                     pygame.draw.circle(screen, (255, 0, 0), (ux, uy), 2)
 
                 if (cfg.ADVANCED_WALLS_VIEW):
