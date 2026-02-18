@@ -100,19 +100,18 @@ def eat_power_pellet(map : GameMap,
     last_power_time = time.time()
     empowered = True
 
-def touch_ghost():
+def touch_ghost(ghost=None):
     global health, invincible, invincible_start_time
     if empowered:
-        eat_ghost()
+        eat_ghost(ghost)
     elif not invincible:
         health -= 1
         invincible = True
         invincible_start_time = time.time()
 
-def eat_ghost():
+def eat_ghost(ghost=None):
     global points
     points += points_for_ghost
-    raise NotImplementedError("Функція eat_ghost ще не реалізована")
 
 def empty_cell( map : GameMap,
                 position : tuple[int, int] # Точка звідки їмо таблетку

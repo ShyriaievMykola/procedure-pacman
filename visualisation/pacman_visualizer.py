@@ -5,9 +5,7 @@ import pacman
 from .visualizer import Visualizer
 from .colors import Colors as C
 from .config import CameraConfig as CC, GraphicsConfig as GC, GameConfig as G
-from constants import WALL, TUNNEL
-from ghosts.ghost_manager import GhostManager
-from .ghost_visualizer import GhostVisualizer
+from ghosts.behaviors.eaten_behavior import EatenBehavior
 
 class PacManVisualizer(Visualizer):
     def __init__(self, screen, map_gen):
@@ -30,6 +28,11 @@ class PacManVisualizer(Visualizer):
         # Ініціалізація привидів
         self.ghost_manager = GhostManager(map_gen)
         self.ghost_viz = GhostVisualizer(self, self.ghost_manager)
+        
+        # Game loop variables
+        self.clock = pygame.time.Clock()
+        self.running = True
+        self.prev_health = pacman.health
     
     def update_logic(self, dt):
         self.pacman_timer += dt
@@ -79,7 +82,15 @@ class PacManVisualizer(Visualizer):
     def check_ghost_collisions(self):
         for ghost in self.ghost_manager.ghosts:
             if pacman.position == ghost.position:
-                pacman.touch_ghost()
+                if not isinstance(ghost.strategy, EatenBehavior):
+                    pacman.touch_ghost(ghost)
+                    if pacman.empowered:
+                        self.ghost_manager.be_eaten(ghost)
+        
+        if pacman.health < self.prev_health and pacman.health > 0:
+            self.ghost_manager.reset_ghosts()
+        
+        self.prev_health = pacman.health
     
     def draw_pacman(self):
         sx = self.render_pos[0] * self.cell + self.x_offset + self.cell // 2
@@ -100,29 +111,35 @@ class PacManVisualizer(Visualizer):
         
         pygame.draw.polygon(self.screen, C.PACMAN, pts)
     
+    def run_one_frame(self):
+        dt = self.clock.tick(60)
+        pygame.event.recent = pygame.event.get()
+        for e in pygame.event.recent:
+            if e.type == pygame.QUIT or (e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE):
+                self.running = False
+                break
+        
+        self.update_logic(dt)
+        self.update_camera()
+        
+        if pacman.health <= 0:
+            return 'GAME_OVER'
+        
+        self.draw_map_base(self.eaten_pellets)
+        self.ghost_viz.draw_ghosts()
+        self.draw_pacman()
+        
+        score = self.font.render(f"SCORE: {pacman.points}", True, C.SCORE_TEXT)
+        self.screen.blit(score, (GC.TEXT_MARGIN, GC.TEXT_MARGIN))
+        
+        health = self.font.render(f"HEALTH: {pacman.health}", True, C.SCORE_TEXT)
+        self.screen.blit(health, (GC.TEXT_MARGIN, GC.TEXT_MARGIN + GC.TEXT_FONT_SIZE + 10))
+        
+        return None
+    
     def run(self):
-        clock = pygame.time.Clock()
-        running = True
-        while running:
-            dt = clock.tick(60)
-            pygame.event.recent = pygame.event.get()
-            for e in pygame.event.recent:
-                if e.type == pygame.QUIT or (e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE):
-                    running = False
-                    break
-
-            
-            self.update_logic(dt)
-            self.update_camera()
-            
-            self.draw_map_base(self.eaten_pellets)
-            self.ghost_viz.draw_ghosts()
-            self.draw_pacman()
-            
-            score = self.font.render(f"SCORE: {pacman.points}", True, C.SCORE_TEXT)
-            self.screen.blit(score, (GC.TEXT_MARGIN, GC.TEXT_MARGIN))
-            
-            health = self.font.render(f"HEALTH: {pacman.health}", True, C.SCORE_TEXT)
-            self.screen.blit(health, (GC.TEXT_MARGIN, GC.TEXT_MARGIN + GC.TEXT_FONT_SIZE + 10))
-            
+        while self.running:
+            result = self.run_one_frame()
+            if result == 'GAME_OVER':
+                return 'GAME_OVER'
             pygame.display.flip()

@@ -2,6 +2,7 @@ import pygame
 import sys
 from menus.main.main_menu import MainMenu
 from menus.game.game_menu import GameMenu
+from menus.game.game_over_menu import GameOverMenu
 import random
 import state
 from map.map_generator import MapGenerator
@@ -34,6 +35,7 @@ class GameManager:
 
         self.main_menu = MainMenu()
         self.seed_menu = GameMenu()
+        self.game_over_menu = GameOverMenu()
 
 
 
@@ -75,6 +77,11 @@ class GameManager:
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     self.state = 'MENU'
 
+            elif self.state == 'GAME_OVER':
+                action = self.game_over_menu.handle_event(event)
+                if action == 'GO_TO_MENU':
+                    self.state = 'MENU'
+
     def _update(self):
         if self.state == 'SEED_INPUT' and self.needs_regeneration:
             current_time = pygame.time.get_ticks()
@@ -92,6 +99,13 @@ class GameManager:
         self.seed = new_seed
         self.map = MapGenerator.generate_map(*config.map_size, self.seed)
         print(f"Map updated with seed: {self.seed}")
+        
+        # Ресет
+        import pacman
+        pacman.health = 3
+        pacman.points = 0
+        pacman.empowered = False
+        pacman.invincible = False
 
     def _draw(self):
         if self.state == 'MENU':
@@ -100,8 +114,13 @@ class GameManager:
             self.seed_menu.draw()
         elif self.state == 'GAME':
             game = PacManVisualizer(self.screen, self.map)
-            game.run()
-            self.state = 'MENU'
+            result = game.run()
+            if result == 'GAME_OVER':
+                self.state = 'GAME_OVER'
+            else:
+                self.state = 'MENU'
+        elif self.state == 'GAME_OVER':
+            self.game_over_menu.draw()
             
         pygame.display.flip()
 
