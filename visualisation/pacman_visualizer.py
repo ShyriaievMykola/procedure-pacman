@@ -66,12 +66,20 @@ class PacManVisualizer(Visualizer):
             self.ghost_viz.save_positions()
             self.ghost_manager.update(pacman)
             self.ghost_timer = 0
+        
+        # Колізія з привидами
+        self.check_ghost_collisions()
     
     def update_camera(self):
         sh = self.screen.get_height()
         ideal_y = self.render_pos[1] * self.cell - (sh // 2)
         target_cam = max(0, min(self.max_y, ideal_y))
         self.y += (target_cam - self.y) * G.CAMERA_SMOOTHING
+    
+    def check_ghost_collisions(self):
+        for ghost in self.ghost_manager.ghosts:
+            if pacman.position == ghost.position:
+                pacman.touch_ghost()
     
     def draw_pacman(self):
         sx = self.render_pos[0] * self.cell + self.x_offset + self.cell // 2
@@ -113,5 +121,8 @@ class PacManVisualizer(Visualizer):
             
             score = self.font.render(f"SCORE: {pacman.points}", True, C.SCORE_TEXT)
             self.screen.blit(score, (GC.TEXT_MARGIN, GC.TEXT_MARGIN))
+            
+            health = self.font.render(f"HEALTH: {pacman.health}", True, C.SCORE_TEXT)
+            self.screen.blit(health, (GC.TEXT_MARGIN, GC.TEXT_MARGIN + GC.TEXT_FONT_SIZE + 10))
             
             pygame.display.flip()
