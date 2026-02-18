@@ -5,6 +5,9 @@ import pacman
 from .visualizer import Visualizer
 from .colors import Colors as C
 from .config import CameraConfig as CC, GraphicsConfig as GC, GameConfig as G
+from constants import WALL, TUNNEL
+from ghosts.ghost_manager import GhostManager
+from .ghost_visualizer import GhostVisualizer
 from ghosts.behaviors.eaten_behavior import EatenBehavior
 
 class PacManVisualizer(Visualizer):
@@ -83,9 +86,16 @@ class PacManVisualizer(Visualizer):
         for ghost in self.ghost_manager.ghosts:
             if pacman.position == ghost.position:
                 if not isinstance(ghost.strategy, EatenBehavior):
-                    pacman.touch_ghost(ghost)
-                    if pacman.empowered:
+                    ghost_eaten = pacman.touch_ghost(ghost)
+                    if ghost_eaten:
+                        if not ghost.eaten_in_this_power_up:
+                            pacman.eat_ghost()
+                            ghost.eaten_in_this_power_up = True
                         self.ghost_manager.be_eaten(ghost)
+        
+        if not pacman.empowered:
+            for ghost in self.ghost_manager.ghosts:
+                ghost.eaten_in_this_power_up = False
         
         if pacman.health < self.prev_health and pacman.health > 0:
             self.ghost_manager.reset_ghosts()

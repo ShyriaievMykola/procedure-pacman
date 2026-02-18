@@ -98,9 +98,7 @@ class GameManager:
         
         self.seed = new_seed
         self.map = MapGenerator.generate_map(*config.map_size, self.seed)
-        print(f"Map updated with seed: {self.seed}")
         
-        # Ресет
         import pacman
         pacman.health = 3
         pacman.points = 0

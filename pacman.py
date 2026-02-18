@@ -101,17 +101,23 @@ def eat_power_pellet(map : GameMap,
     empowered = True
 
 def touch_ghost(ghost=None):
+    """Обробляє контакт Pac-Man з привидом.
+    Повертає True якщо привід має бути з'їдений.
+    """
     global health, invincible, invincible_start_time
     if empowered:
-        eat_ghost(ghost)
+        return True  # Привід з'їдений
     elif not invincible:
         health -= 1
         invincible = True
         invincible_start_time = time.time()
+        return False
+    return False
 
-def eat_ghost(ghost=None):
+def eat_ghost():
     global points
     points += points_for_ghost
+    return points_for_ghost
 
 def empty_cell( map : GameMap,
                 position : tuple[int, int] # Точка звідки їмо таблетку
