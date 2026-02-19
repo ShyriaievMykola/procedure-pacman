@@ -14,8 +14,8 @@ class GhostManager:
         self.ghost_door = (map.ghost_door[0], map.ghost_door[1] - 1)
 
         # Таймери згідно з вашим зображенням (Level 1)
-        # Scatter 7, Chase 20, Scatter 7, Chase 20, Scatter 5, Chase 20, Scatter 5, Chase (inf)
-        self.intervals = [7, 20, 7, 20, 5, 20, 5]
+        # Scatter 5, Chase 20, Scatter 5, Chase 20, Scatter 4, Chase 20, Scatter 4, Chase (inf)
+        self.intervals = [5, 20, 5, 20, 4, 20, 4]
         self.current_interval_index = 0
         self.last_switch_time = time.time()
         
