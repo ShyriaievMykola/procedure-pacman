@@ -44,7 +44,8 @@ def main():
         state.game_instance.run()
     
     if len(sys.argv) == 1:
-        test_visualization(map)
+        GameManager()
+        state.game_instance.run()
 
 def parse_arguments():    
     parser = argparse.ArgumentParser(description="Procedural Pac-Man Maze Generator")
@@ -76,7 +77,7 @@ def test_pacman(map):
     fps = 10
     while True:
         time.sleep(1 / fps)
-        pacman.old_update(map)
+        pacman.old_update(map, None)
         os.system('cls')
         map.print_grid(pacman.position)
         print(f"Points: {pacman.points}")
@@ -94,7 +95,7 @@ def test_ghost():
     fps = 10
     while True:
         time.sleep(1 / fps)
-        pacman.old_update(map)
+        pacman.old_update(map, ghost_manager)
         os.system('cls')
         map.print_grid(
             pacman.position,

@@ -18,6 +18,7 @@ class Colors:
     TEXT_BACKGROUND = (0, 0, 0)
     SCORE_TEXT = (255, 255, 255)
     UI_FONT = None
+    HEART = (255, 0, 0)
     
     # Персонажі
     PACMAN = (255, 255, 0)
