@@ -147,6 +147,8 @@ def touch_ghost(ghost_manager : GhostManager, ghost : Ghost):
             game_over()
         invincible = True
         invincible_start_time = time.time()
+        return False
+    return False
 
 def game_over():
     raise NotImplementedError("Game Over screen is not implemented yet.")
