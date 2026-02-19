@@ -6,7 +6,7 @@ import state
 from .visualizer import Visualizer
 from .colors import Colors as C
 from .config import CameraConfig as CC, GraphicsConfig as GC, GameConfig as G, play_state
-import visualisation.config as cfg
+import visualisation.config
 from constants import WALL, TUNNEL
 from ghosts.ghost_manager import GhostManager
 from .ghost_visualizer import GhostVisualizer
@@ -254,8 +254,10 @@ class PacManVisualizer(Visualizer):
     def run(self):
         while self.running:
             self.run_one_frame()
-            if cfg.state == play_state.GAME_OVER:
+            if visualisation.config.state == play_state.GAME_OVER:
+                visualisation.config.state = play_state.PLAYING
                 return "GAME_OVER"
-            elif cfg.state == play_state.VICTORY:
+            elif visualisation.config.state == play_state.VICTORY:
+                visualisation.config.state = play_state.PLAYING
                 return "VICTORY"
             pygame.display.flip()
