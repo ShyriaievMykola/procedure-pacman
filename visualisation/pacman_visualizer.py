@@ -59,7 +59,7 @@ class PacManVisualizer(Visualizer):
         # Оновлення Pac-Man
         if self.pacman_timer >= G.PACMAN_SPEED_MS:
             self.prev_pos = list(pacman.position)
-            pacman.update(self.map)
+            pacman.update(self.map, self.ghost_manager)
             
             px, py = pacman.position
             if self.map.grid[py][px] == TUNNEL and (px, py) not in self.eaten_pellets:
@@ -118,9 +118,46 @@ class PacManVisualizer(Visualizer):
         for i in range(33):
             theta = math.radians(rot + angle + i * (360 - 2 * angle) / 32)
             pts.append((center[0] + radius * math.cos(theta), center[1] - radius * math.sin(theta)))
-        
         pygame.draw.polygon(self.screen, C.PACMAN, pts)
     
+#    def draw_heart(self, x, y, size, color):
+#        r = size // 4
+#        pygame.draw.circle(self.screen, color, (x + r, y + r), r)
+#        pygame.draw.circle(self.screen, color, (x + 3 * r, y + r), r)
+#        pts = [(x, y + r), (x + 4 * r, y + r), (x + 2 * r, y + 4 * r)]
+#        pygame.draw.polygon(self.screen, color, pts)
+#
+#    def draw_hud(self):
+#        size = max(12, self.cell // 2)
+#        spacing = size + 6
+#        start_x = GC.TEXT_MARGIN
+#        start_y = GC.TEXT_MARGIN + GC.TEXT_FONT_SIZE
+#        for i in range(pacman.health):
+#            self.draw_heart(start_x + i * spacing, start_y, size, C.HEART)
+#    
+#    def run(self):
+#        clock = pygame.time.Clock()
+#        running = True
+#        while running:
+#            dt = clock.tick(60)
+#            pygame.event.recent = pygame.event.get()
+#            for e in pygame.event.recent:
+#                if e.type == pygame.QUIT or (e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE):
+#                    running = False
+#                    break
+#
+#            
+#            self.update_logic(dt)
+#            self.update_camera()
+#            
+#            self.draw_map_base(self.eaten_pellets)
+#            self.ghost_viz.draw_ghosts()
+#            self.draw_pacman()
+#            
+#            score = self.font.render(f"SCORE: {pacman.points}", True, C.SCORE_TEXT)
+#            self.screen.blit(score, (GC.TEXT_MARGIN, GC.TEXT_MARGIN))
+#            self.draw_hud()
+            
     def run_one_frame(self):
         dt = self.clock.tick(60)
         pygame.event.recent = pygame.event.get()
