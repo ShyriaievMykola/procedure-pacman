@@ -13,7 +13,6 @@ class GhostManager:
         self.map_height = len(self.grid)
         self.ghost_door = (map.ghost_door[0], map.ghost_door[1] - 1)
 
-        # Таймери згідно з вашим зображенням (Level 1)
         # Scatter 7, Chase 20, Scatter 7, Chase 20, Scatter 5, Chase 20, Scatter 5, Chase (inf)
         self.intervals = [7, 20, 7, 20, 5, 20, 5]
         self.current_interval_index = 0
@@ -57,8 +56,8 @@ class GhostManager:
                 if ghost.position == pacman.position:
                     ghost.change_strategy(EatenBehavior(ghost, self.map_width, self.map_height, self.ghost_door))
             
-            # Якщо з'їдений дійшов до бази
             if isinstance(ghost.strategy, EatenBehavior) and ghost.position == self.ghost_door:
+                ghost.eaten_in_this_power_up = False
                 self._apply_global_mode(ghost)
 
         # 3. ТАЙМЕРИ SCATTER / CHASE (працюють тільки якщо не перелякані)
@@ -99,4 +98,5 @@ class GhostManager:
         self.current_global_mode = "scatter"
         for ghost in self.ghosts:
             ghost.position = self.ghost_door
+            ghost.eaten_in_this_power_up = False
             self._apply_global_mode(ghost)
