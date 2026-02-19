@@ -10,8 +10,8 @@ from ghosts.ghost_manager import GhostManager
 from .ghost_visualizer import GhostVisualizer
 
 class PacManVisualizer(Visualizer):
-    def __init__(self, map_gen):
-        super().__init__(map_gen)
+    def __init__(self, screen, map_gen):
+        super().__init__(screen, map_gen)
         self.font = pygame.font.Font(None, GC.TEXT_FONT_SIZE)
         self.eaten_pellets = set()
         
@@ -89,22 +89,34 @@ class PacManVisualizer(Visualizer):
         for i in range(33):
             theta = math.radians(rot + angle + i * (360 - 2 * angle) / 32)
             pts.append((center[0] + radius * math.cos(theta), center[1] - radius * math.sin(theta)))
-        if pacman.invincible: # Дебаг для бачення стану, згодом треба видалити або замінити
-            pygame.draw.polygon(self.screen, (100, 100, 255), pts)
-        elif pacman.empowered:
-            pygame.draw.polygon(self.screen, (255, 100, 100), pts)
-        else:
-            pygame.draw.polygon(self.screen, C.PACMAN, pts)
+        pygame.draw.polygon(self.screen, C.PACMAN, pts)
+    
+    def draw_heart(self, x, y, size, color):
+        r = size // 4
+        pygame.draw.circle(self.screen, color, (x + r, y + r), r)
+        pygame.draw.circle(self.screen, color, (x + 3 * r, y + r), r)
+        pts = [(x, y + r), (x + 4 * r, y + r), (x + 2 * r, y + 4 * r)]
+        pygame.draw.polygon(self.screen, color, pts)
+
+    def draw_hud(self):
+        size = max(12, self.cell // 2)
+        spacing = size + 6
+        start_x = GC.TEXT_MARGIN
+        start_y = GC.TEXT_MARGIN + GC.TEXT_FONT_SIZE
+        for i in range(pacman.health):
+            self.draw_heart(start_x + i * spacing, start_y, size, C.HEART)
     
     def run(self):
         clock = pygame.time.Clock()
-        while True:
+        running = True
+        while running:
             dt = clock.tick(60)
             pygame.event.recent = pygame.event.get()
             for e in pygame.event.recent:
                 if e.type == pygame.QUIT or (e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE):
-                    pygame.quit()
-                    sys.exit()
+                    running = False
+                    break
+
             
             self.update_logic(dt)
             self.update_camera()
@@ -115,5 +127,6 @@ class PacManVisualizer(Visualizer):
             
             score = self.font.render(f"SCORE: {pacman.points}", True, C.SCORE_TEXT)
             self.screen.blit(score, (GC.TEXT_MARGIN, GC.TEXT_MARGIN))
+            self.draw_hud()
             
             pygame.display.flip()

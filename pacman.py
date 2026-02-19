@@ -23,7 +23,7 @@ empowered : bool = False # Чи підсилений пекмен (після п
 almost_lost_power : bool = False # Буде True за декілька секунд до втрати сил
 almost_lost_power_span : float = 2 # Кількість часу сигналу
 
-health : int = 1000  # Кількість життів пекмена
+health : int = 3  # Кількість життів пекмена
 invincible_span : float = 3.0 # Тривалість безсмертя після втрати життя
 invincible_start_time : float = 0.0 # Час початку безсмертя після втрати життя
 invincible : bool = False # Чи є пекмен безсмертним зараз
