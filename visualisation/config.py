@@ -1,3 +1,6 @@
+from enum import Enum
+
+
 class CameraConfig:
     ACCELERATION = 0.5
     FRICTION = 0.85
@@ -37,6 +40,13 @@ class GameConfig:
     GHOST_WAVE_COUNT = 3                # Кількість хвиль на ніжках
     GHOST_WAVE_HEIGHT_DIVISOR = 3       # Висота хвилі (wave_width // 3)
     GHOST_FRIGHTENED_BLINK_SPEED = 200  # Швидкість миготіння (мс)
+
+class play_state(Enum):
+    PLAYING = 1
+    GAME_OVER = 2
+    VICTORY = 3
+
+state = play_state.PLAYING
 
 def set_difficulty(level : int):
     if level == 1: # Легко

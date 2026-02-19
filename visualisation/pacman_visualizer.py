@@ -2,13 +2,16 @@ import pygame
 import sys
 import math
 import pacman
+import state
 from .visualizer import Visualizer
 from .colors import Colors as C
-from .config import CameraConfig as CC, GraphicsConfig as GC, GameConfig as G
+from .config import CameraConfig as CC, GraphicsConfig as GC, GameConfig as G, play_state
+import visualisation.config as cfg
 from constants import WALL, TUNNEL
 from ghosts.ghost_manager import GhostManager
 from .ghost_visualizer import GhostVisualizer
 from ghosts.behaviors.eaten_behavior import EatenBehavior
+
 
 class PacManVisualizer(Visualizer):
     def __init__(self, screen, map_gen):
@@ -86,7 +89,7 @@ class PacManVisualizer(Visualizer):
         for ghost in self.ghost_manager.ghosts:
             if pacman.position == ghost.position:
                 if not isinstance(ghost.strategy, EatenBehavior):
-                    ghost_eaten = pacman.touch_ghost(ghost)
+                    ghost_eaten = pacman.touch_ghost(self.ghost_manager, ghost)
                     if ghost_eaten:
                         if not ghost.eaten_in_this_power_up:
                             pacman.eat_ghost()
@@ -120,43 +123,43 @@ class PacManVisualizer(Visualizer):
             pts.append((center[0] + radius * math.cos(theta), center[1] - radius * math.sin(theta)))
         pygame.draw.polygon(self.screen, C.PACMAN, pts)
     
-#    def draw_heart(self, x, y, size, color):
-#        r = size // 4
-#        pygame.draw.circle(self.screen, color, (x + r, y + r), r)
-#        pygame.draw.circle(self.screen, color, (x + 3 * r, y + r), r)
-#        pts = [(x, y + r), (x + 4 * r, y + r), (x + 2 * r, y + 4 * r)]
-#        pygame.draw.polygon(self.screen, color, pts)
-#
-#    def draw_hud(self):
-#        size = max(12, self.cell // 2)
-#        spacing = size + 6
-#        start_x = GC.TEXT_MARGIN
-#        start_y = GC.TEXT_MARGIN + GC.TEXT_FONT_SIZE
-#        for i in range(pacman.health):
-#            self.draw_heart(start_x + i * spacing, start_y, size, C.HEART)
-#    
-#    def run(self):
-#        clock = pygame.time.Clock()
-#        running = True
-#        while running:
-#            dt = clock.tick(60)
-#            pygame.event.recent = pygame.event.get()
-#            for e in pygame.event.recent:
-#                if e.type == pygame.QUIT or (e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE):
-#                    running = False
-#                    break
-#
-#            
-#            self.update_logic(dt)
-#            self.update_camera()
-#            
-#            self.draw_map_base(self.eaten_pellets)
-#            self.ghost_viz.draw_ghosts()
-#            self.draw_pacman()
-#            
-#            score = self.font.render(f"SCORE: {pacman.points}", True, C.SCORE_TEXT)
-#            self.screen.blit(score, (GC.TEXT_MARGIN, GC.TEXT_MARGIN))
-#            self.draw_hud()
+    def draw_heart(self, x, y, size, color):
+        r = size // 4
+        pygame.draw.circle(self.screen, color, (x + r, y + r), r)
+        pygame.draw.circle(self.screen, color, (x + 3 * r, y + r), r)
+        pts = [(x, y + r), (x + 4 * r, y + r), (x + 2 * r, y + 4 * r)]
+        pygame.draw.polygon(self.screen, color, pts)
+
+    def draw_hud(self):
+        size = max(12, self.cell // 2)
+        spacing = size + 6
+        start_x = GC.TEXT_MARGIN
+        start_y = GC.TEXT_MARGIN + GC.TEXT_FONT_SIZE
+        for i in range(pacman.health):
+            self.draw_heart(start_x + i * spacing, start_y, size, C.HEART)
+    
+    # def run(self):
+    #     clock = pygame.time.Clock()
+    #     running = True
+    #     while running:
+    #         dt = clock.tick(60)
+    #         pygame.event.recent = pygame.event.get()
+    #         for e in pygame.event.recent:
+    #             if e.type == pygame.QUIT or (e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE):
+    #                 running = False
+    #                 break
+
+            
+    #         self.update_logic(dt)
+    #         self.update_camera()
+            
+    #         self.draw_map_base(self.eaten_pellets)
+    #         self.ghost_viz.draw_ghosts()
+    #         self.draw_pacman()
+            
+    #         score = self.font.render(f"SCORE: {pacman.points}", True, C.SCORE_TEXT)
+    #         self.screen.blit(score, (GC.TEXT_MARGIN, GC.TEXT_MARGIN))
+    #         self.draw_hud()
             
     def run_one_frame(self):
         dt = self.clock.tick(60)
@@ -169,24 +172,18 @@ class PacManVisualizer(Visualizer):
         self.update_logic(dt)
         self.update_camera()
         
-        if pacman.health <= 0:
-            return 'GAME_OVER'
-        
         self.draw_map_base(self.eaten_pellets)
         self.ghost_viz.draw_ghosts()
         self.draw_pacman()
         
         score = self.font.render(f"SCORE: {pacman.points}", True, C.SCORE_TEXT)
         self.screen.blit(score, (GC.TEXT_MARGIN, GC.TEXT_MARGIN))
-        
-        health = self.font.render(f"HEALTH: {pacman.health}", True, C.SCORE_TEXT)
-        self.screen.blit(health, (GC.TEXT_MARGIN, GC.TEXT_MARGIN + GC.TEXT_FONT_SIZE + 10))
-        
-        return None
-    
+        self.draw_hud()
     def run(self):
         while self.running:
-            result = self.run_one_frame()
-            if result == 'GAME_OVER':
-                return 'GAME_OVER'
+            self.run_one_frame()
+            if cfg.state == play_state.GAME_OVER:
+                return "GAME_OVER"
+            elif cfg.state == play_state.VICTORY:
+                return "VICTORY"
             pygame.display.flip()

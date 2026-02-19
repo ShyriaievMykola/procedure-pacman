@@ -5,7 +5,7 @@ import time
 import keyboard
 from ghosts.ghost import Ghost
 from ghosts.ghost_manager import GhostManager
-
+import visualisation.config
 pygame.event.recent = []
 # Будем робити по ООП, тут буде зазначений стан і позиція пекмена
 position : tuple[int, int] 
@@ -24,7 +24,7 @@ almost_lost_power : bool = False # Буде True за декілька секу�
 almost_lost_power_span : float = 2 # Кількість часу сигналу
 
 health : int = 3  # Кількість життів пекмена
-invincible_span : float = 3.0 # Тривалість безсмертя після втрати життя
+invincible_span : float = 0.0 # Тривалість безсмертя після втрати життя
 invincible_start_time : float = 0.0 # Час початку безсмертя після втрати життя
 invincible : bool = False # Чи є пекмен безсмертним зараз
 points_for_ghost : int = 10 # Кількість очок за з'їденого привида
@@ -151,10 +151,10 @@ def touch_ghost(ghost_manager : GhostManager, ghost : Ghost):
     return False
 
 def game_over():
-    raise NotImplementedError("Game Over screen is not implemented yet.")
+    visualisation.config.state = visualisation.config.play_state.GAME_OVER
 
 def victory():
-    raise NotImplementedError("Victory screen is not implemented yet.")
+    visualisation.config.state = visualisation.config.play_state.VICTORY
 
 def eat_ghost(ghost_manager : GhostManager, ghost : Ghost):
     global points

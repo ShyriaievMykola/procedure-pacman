@@ -70,7 +70,7 @@ def test_map_generation(map):
 
 def test_visualization(map):
     game = PacManVisualizer(map)
-    game.run()
+    print(game.run())
 
 def test_pacman(map):
     pacman.position = pacman.get_spawn_position(map)
