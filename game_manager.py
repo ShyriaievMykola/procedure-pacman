@@ -7,9 +7,10 @@ from menus.game.victory_menu import VictoryMenu
 import random
 import state
 from map.map_generator import MapGenerator
-import game_config as config
 from visualisation.pacman_visualizer import PacManVisualizer
 from visualisation.visualizer import Visualizer
+from difficulty_manager import DifficultyManager
+from visualisation.config import DifficultyConfig
 
 class GameManager:
     def __init__(self):
@@ -24,7 +25,8 @@ class GameManager:
 
         # Змінні гри
         self.seed = random.randint(0, 10000)
-        self.map = MapGenerator.generate_map(*config.map_size, self.seed)
+        self.map_size = (21, 36)
+        self.map = MapGenerator.generate_map(*self.map_size, self.seed)
         
         # Debounce
         self.last_input_time = 0
@@ -38,6 +40,9 @@ class GameManager:
         self.seed_menu = GameMenu()
         self.game_over_menu = GameOverMenu()
         self.victory_menu = VictoryMenu()
+
+        self.dif_config = DifficultyConfig()
+        self.dif_manager = DifficultyManager(self.dif_config)
 
 
 
@@ -107,7 +112,7 @@ class GameManager:
             new_seed = int(raw_text) if raw_text.isdigit() else hash(raw_text)
         
         self.seed = new_seed
-        self.map = MapGenerator.generate_map(*config.map_size, self.seed)
+        self.map = MapGenerator.generate_map(*self.map_size, self.seed)
         
         import pacman
         pacman.health = 3
