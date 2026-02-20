@@ -116,7 +116,7 @@ class GameManager:
         self.map = MapGenerator.generate_map(*self.map_size, self.seed)
         
         import pacman
-        pacman.health = 3
+        pacman.health = pacman.max_health
         pacman.points = 0
         pacman.empowered = False
         pacman.invincible = False
