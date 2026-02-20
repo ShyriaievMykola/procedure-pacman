@@ -3,6 +3,7 @@ import sys
 from menus.main.main_menu import MainMenu
 from menus.game.game_menu import GameMenu
 from menus.game.game_over_menu import GameOverMenu
+from menus.game.victory_menu import VictoryMenu
 import random
 import state
 from map.map_generator import MapGenerator
@@ -38,6 +39,7 @@ class GameManager:
         self.main_menu = MainMenu()
         self.seed_menu = GameMenu()
         self.game_over_menu = GameOverMenu()
+        self.victory_menu = VictoryMenu()
 
         self.dif_config = DifficultyConfig()
         self.dif_manager = DifficultyManager(self.dif_config)
@@ -87,6 +89,14 @@ class GameManager:
                 if action == 'GO_TO_MENU':
                     self.state = 'MENU'
 
+            elif self.state == 'VICTORY':
+                action = self.victory_menu.handle_event(event)
+                if action == 'NEW_GAME':
+                    self._generate_new_map()
+                    self.state = 'GAME'
+                elif action == 'GO_TO_MENU':
+                    self.state = 'MENU'
+
     def _update(self):
         if self.state == 'SEED_INPUT' and self.needs_regeneration:
             current_time = pygame.time.get_ticks()
@@ -120,10 +130,14 @@ class GameManager:
             result = game.run()
             if result == 'GAME_OVER':
                 self.state = 'GAME_OVER'
+            elif result == 'VICTORY':  # Додаємо перевірку на перемогу
+                self.state = 'VICTORY'
             else:
                 self.state = 'MENU'
         elif self.state == 'GAME_OVER':
             self.game_over_menu.draw()
+        elif self.state == 'VICTORY':  # Додаємо відображення Victory Menu
+            self.victory_menu.draw()
             
         pygame.display.flip()
 

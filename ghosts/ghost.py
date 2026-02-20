@@ -1,10 +1,13 @@
 from ghosts.behaviors.base_behavior import BaseBehavior
 from ghosts.behaviors.scatter_behavior import ScatterBehavior
 from ghosts.utils.pathfinding import a_star
+from ghosts.behaviors.frightened_behavior import FrightenedBehavior
+from ghosts.behaviors.eaten_behavior import EatenBehavior
 
 class Ghost:
-    def __init__(self, position, color, grid):
+    def __init__(self, position, color, grid, old_position=None):
         self.position = position
+        self.old_position = old_position if old_position else position
         self.grid = grid
         self.color = color
         self.strategy = ScatterBehavior(color, len(grid[0]), len(grid))
@@ -15,6 +18,7 @@ class Ghost:
     def move(self):
         path = a_star(self.grid, self.position, self.target_tile)
         if path:
+            self.old_position = self.position
             self.position = path[0]  # Оновлюємо позицію як кортеж
         return self.position
 
@@ -25,3 +29,9 @@ class Ghost:
         if self.strategy:
             self.target_tile = self.strategy.get_target(self, pacman)
         return self.target_tile
+    
+    def is_frightened(self) -> bool:
+        return isinstance(self.strategy, FrightenedBehavior)
+
+    def is_eaten(self) -> bool:
+        return isinstance(self.strategy, EatenBehavior)

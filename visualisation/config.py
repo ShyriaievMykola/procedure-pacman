@@ -1,3 +1,6 @@
+from enum import Enum
+
+
 class CameraConfig:
     ACCELERATION = 0.5
     FRICTION = 0.85
