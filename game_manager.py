@@ -43,6 +43,7 @@ class GameManager:
 
         self.dif_config = DifficultyConfig()
         self.dif_manager = DifficultyManager(self.dif_config)
+        self.dif_manager.set_hard()
 
 
 
