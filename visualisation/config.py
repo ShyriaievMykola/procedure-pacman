@@ -44,3 +44,10 @@ class GameConfig:
 class DifficultyConfig:
     GHOST_SPEED_MS = 190                # Швидкість кроку привидів
     PACMAN_SPEED_MS = 190       # Швидкість кроку по сітці
+
+class play_state(Enum):
+    PLAYING = 1
+    GAME_OVER = 2
+    VICTORY = 3
+
+state = play_state.PLAYING

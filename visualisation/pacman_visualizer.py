@@ -41,6 +41,13 @@ class PacManVisualizer(Visualizer):
         self.clock = pygame.time.Clock()
         self.running = True
         self.prev_health = pacman.health
+        self.death_anim_playing = False
+        self.death_anim_time = 0
+        self.DEATH_ANIM_DURATION = 1200  # мс
+        self.DEATH_ANIM_GAME_OVER_DURATION = 2000  # мс для останнього життя
+        self.death_anim_game_over = False
+        self.death_anim_target_duration = self.DEATH_ANIM_DURATION
+        self.reset_after_death = False
 
         self.dif_config = state.game_instance.dif_config
     
