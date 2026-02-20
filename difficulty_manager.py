@@ -18,4 +18,7 @@ class DifficultyManager:
         self.DC.PACMAN_SPEED_MS = per_pacman * 190 / 100
         self.DC.GHOST_SPEED_MS = per_ghost * 190 / 100
 
-    
+    def set_difficulty(self, level : int):
+        self.DC.GHOST_SPEED_MS = 475 - 75 * level
+        self.DC.PACMAN_SPEED_MS = 250 - 30 * level
+        self.DC.GHOST_SPEED_MS = max(self.DC.PACMAN_SPEED_MS, self.DC.GHOST_SPEED_MS)
