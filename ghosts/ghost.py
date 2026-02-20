@@ -13,6 +13,7 @@ class Ghost:
         self.strategy = ScatterBehavior(color, len(grid[0]), len(grid))
         self.target_tile = self.position
         self.scatter_target = self.strategy.get_target(self, None)
+        self.eaten_in_this_power_up = False 
 
     def move(self):
         path = a_star(self.grid, self.position, self.target_tile)

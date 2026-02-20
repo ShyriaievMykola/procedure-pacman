@@ -5,7 +5,7 @@ import time
 import keyboard
 from ghosts.ghost import Ghost
 from ghosts.ghost_manager import GhostManager
-
+import visualisation.config
 pygame.event.recent = []
 # Будем робити по ООП, тут буде зазначений стан і позиція пекмена
 position : tuple[int, int] 
@@ -15,7 +15,7 @@ pending_direction : tuple[int, int] = (0, 0) # Напрямок, в який г�
                                             # (користувач вказав напрямок але поки там стіна)
 points : int = 0
 
-fruit_value : int = 100 # Кількість очок за з'їдений фрукт
+fruit_value : int = 1000 # Кількість очок за з'їдений фрукт
 
 last_power_time : float = 0.0 # Час, коли пекмен останній раз з'їв power pellet
 power_span : float = 10.0 # Тривалість дії підсилення в секундах
@@ -23,11 +23,15 @@ empowered : bool = False # Чи підсилений пекмен (після п
 almost_lost_power : bool = False # Буде True за декілька секунд до втрати сил
 almost_lost_power_span : float = 2 # Кількість часу сигналу
 
-health : int = 3  # Кількість життів пекмена
-invincible_span : float = 3.0 # Тривалість безсмертя після втрати життя
+max_health : int = 10 # Максимальна кількість життів пекмена
+health : int = max_health  # Кількість життів пекмена
+
+invincible_span : float = 0.0 # Тривалість безсмертя після втрати життя
 invincible_start_time : float = 0.0 # Час початку безсмертя після втрати життя
 invincible : bool = False # Чи є пекмен безсмертним зараз
-points_for_ghost : int = 10 # Кількість очок за з'їденого привида
+starting_points_for_ghost : int = 200
+points_for_ghost : int = starting_points_for_ghost # Кількість очок за з'їденого привида
+multiplier_for_ghost : int = 2.0 # Множник очок за кожного наступного з'їденого привида в одному підсиленні
 
 def get_spawn_position(map : GameMap
                     ) -> tuple[int, int]: # Повертає координати x, y
@@ -147,17 +151,21 @@ def touch_ghost(ghost_manager : GhostManager, ghost : Ghost):
             game_over()
         invincible = True
         invincible_start_time = time.time()
+        return False
+    return False
 
 def game_over():
-    raise NotImplementedError("Game Over screen is not implemented yet.")
+    visualisation.config.state = visualisation.config.play_state.GAME_OVER
 
 def victory():
-    raise NotImplementedError("Victory screen is not implemented yet.")
+    visualisation.config.state = visualisation.config.play_state.VICTORY
 
 def eat_ghost(ghost_manager : GhostManager, ghost : Ghost):
-    global points
+    global points, points_for_ghost
     points += points_for_ghost
+    print(f"Ate ghost for {points_for_ghost} points!")
     ghost_manager.be_eaten(ghost)
+    points_for_ghost = points_for_ghost * multiplier_for_ghost
 
 def empty_cell( map : GameMap,
                 position : tuple[int, int] # Точка звідки їмо таблетку
@@ -191,11 +199,12 @@ def old_control():
         pending_direction = (1, 0)
 
 def maybe_lose_power():
-    global empowered, almost_lost_power
+    global empowered, almost_lost_power, points_for_ghost
     if time.time() - last_power_time > power_span - almost_lost_power_span:
         almost_lost_power = True
     if time.time() - last_power_time > power_span:
         empowered = False
+        points_for_ghost = starting_points_for_ghost
         almost_lost_power = False
 
 def maybe_lose_invincibility():

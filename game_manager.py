@@ -2,12 +2,15 @@ import pygame
 import sys
 from menus.main.main_menu import MainMenu
 from menus.game.game_menu import GameMenu
+from menus.game.game_over_menu import GameOverMenu
+from menus.game.victory_menu import VictoryMenu
 import random
 import state
 from map.map_generator import MapGenerator
-import game_config as config
 from visualisation.pacman_visualizer import PacManVisualizer
 from visualisation.visualizer import Visualizer
+from difficulty_manager import DifficultyManager
+from visualisation.config import DifficultyConfig
 
 class GameManager:
     def __init__(self):
@@ -22,7 +25,8 @@ class GameManager:
 
         # Змінні гри
         self.seed = random.randint(0, 10000)
-        self.map = MapGenerator.generate_map(*config.map_size, self.seed)
+        self.map_size = (21, 36)
+        self.map = MapGenerator.generate_map(*self.map_size, self.seed)
         
         # Debounce
         self.last_input_time = 0
@@ -34,6 +38,12 @@ class GameManager:
 
         self.main_menu = MainMenu()
         self.seed_menu = GameMenu()
+        self.game_over_menu = GameOverMenu()
+        self.victory_menu = VictoryMenu()
+
+        self.dif_config = DifficultyConfig()
+        self.dif_manager = DifficultyManager(self.dif_config)
+        self.dif_manager.set_hard()
 
 
 
@@ -75,6 +85,19 @@ class GameManager:
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     self.state = 'MENU'
 
+            elif self.state == 'GAME_OVER':
+                action = self.game_over_menu.handle_event(event)
+                if action == 'GO_TO_MENU':
+                    self.state = 'MENU'
+
+            elif self.state == 'VICTORY':
+                action = self.victory_menu.handle_event(event)
+                if action == 'NEW_GAME':
+                    self._generate_new_map()
+                    self.state = 'GAME'
+                elif action == 'GO_TO_MENU':
+                    self.state = 'MENU'
+
     def _update(self):
         if self.state == 'SEED_INPUT' and self.needs_regeneration:
             current_time = pygame.time.get_ticks()
@@ -90,8 +113,13 @@ class GameManager:
             new_seed = int(raw_text) if raw_text.isdigit() else hash(raw_text)
         
         self.seed = new_seed
-        self.map = MapGenerator.generate_map(*config.map_size, self.seed)
-        print(f"Map updated with seed: {self.seed}")
+        self.map = MapGenerator.generate_map(*self.map_size, self.seed)
+        
+        import pacman
+        pacman.health = pacman.max_health
+        pacman.points = 0
+        pacman.empowered = False
+        pacman.invincible = False
 
     def _draw(self):
         if self.state == 'MENU':
@@ -100,8 +128,17 @@ class GameManager:
             self.seed_menu.draw()
         elif self.state == 'GAME':
             game = PacManVisualizer(self.screen, self.map)
-            game.run()
-            self.state = 'MENU'
+            result = game.run()
+            if result == 'GAME_OVER':
+                self.state = 'GAME_OVER'
+            elif result == 'VICTORY':  # Додаємо перевірку на перемогу
+                self.state = 'VICTORY'
+            else:
+                self.state = 'MENU'
+        elif self.state == 'GAME_OVER':
+            self.game_over_menu.draw()
+        elif self.state == 'VICTORY':  # Додаємо відображення Victory Menu
+            self.victory_menu.draw()
             
         pygame.display.flip()
 
