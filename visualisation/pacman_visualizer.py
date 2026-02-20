@@ -9,6 +9,7 @@ from constants import WALL, TUNNEL
 from ghosts.ghost_manager import GhostManager
 from .ghost_visualizer import GhostVisualizer
 from ghosts.behaviors.eaten_behavior import EatenBehavior
+import state
 
 class PacManVisualizer(Visualizer):
     def __init__(self, screen, map_gen):
@@ -36,13 +37,15 @@ class PacManVisualizer(Visualizer):
         self.clock = pygame.time.Clock()
         self.running = True
         self.prev_health = pacman.health
+
+        self.dif_config = state.game_instance.dif_config
     
     def update_logic(self, dt):
         self.pacman_timer += dt
         self.ghost_timer += dt
         
         # Прогрес анімації для Pac-Man
-        pacman_progress = min(1.0, self.pacman_timer / G.PACMAN_SPEED_MS)
+        pacman_progress = min(1.0, self.pacman_timer / self.dif_config.PACMAN_SPEED_MS)
         for i in range(2):
             diff = pacman.position[i] - self.prev_pos[i]
             if abs(diff) > 2:  # Телепорт
@@ -51,13 +54,13 @@ class PacManVisualizer(Visualizer):
                 self.render_pos[i] = self.prev_pos[i] + (diff * pacman_progress)
         
         # Прогрес анімації для привидів
-        ghost_progress = min(1.0, self.ghost_timer / G.GHOST_SPEED_MS)
+        ghost_progress = min(1.0, self.ghost_timer / self.dif_config.GHOST_SPEED_MS)
         self.ghost_viz.update_positions(ghost_progress)
         
         pacman.control()
         
         # Оновлення Pac-Man
-        if self.pacman_timer >= G.PACMAN_SPEED_MS:
+        if self.pacman_timer >= self.dif_config.PACMAN_SPEED_MS:
             self.prev_pos = list(pacman.position)
             pacman.update(self.map)
             
@@ -68,7 +71,7 @@ class PacManVisualizer(Visualizer):
             self.pacman_timer = 0
         
         # Оновлення привидів
-        if self.ghost_timer >= G.GHOST_SPEED_MS:
+        if self.ghost_timer >= self.dif_config.GHOST_SPEED_MS:
             self.ghost_viz.save_positions()
             self.ghost_manager.update(pacman)
             self.ghost_timer = 0

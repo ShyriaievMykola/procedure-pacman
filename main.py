@@ -44,7 +44,8 @@ def main():
         state.game_instance.run()
     
     if len(sys.argv) == 1:
-        test_visualization(map)
+        GameManager()
+        state.game_instance.run()
 
 def parse_arguments():    
     parser = argparse.ArgumentParser(description="Procedural Pac-Man Maze Generator")
