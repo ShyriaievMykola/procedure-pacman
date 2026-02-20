@@ -3,6 +3,7 @@ from .colors import Colors as C
 from .config import GameConfig as G
 from ghosts.behaviors.frightened_behavior import FrightenedBehavior
 from ghosts.behaviors.eaten_behavior import EatenBehavior
+import pacman
 
 class GhostVisualizer:
     def __init__(self, visualizer, ghost_manager):
@@ -40,7 +41,7 @@ class GhostVisualizer:
             
             # Колір
             if isinstance(g.strategy, FrightenedBehavior):
-                color = C.GHOST_FRIGHTENED_BLINK if (pygame.time.get_ticks() // G.GHOST_FRIGHTENED_BLINK_SPEED) % 2 else C.GHOST_FRIGHTENED
+                color = C.GHOST_FRIGHTENED_BLINK if (pygame.time.get_ticks() // G.GHOST_FRIGHTENED_BLINK_SPEED) % 2 and pacman.almost_lost_power else C.GHOST_FRIGHTENED
             elif isinstance(g.strategy, EatenBehavior):
                 color = C.GHOST_EATEN
             else:
