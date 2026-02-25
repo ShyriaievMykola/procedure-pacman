@@ -16,7 +16,7 @@ from visualisation.config import DifficultyConfig
 class GameManager:
     def __init__(self):
         state.game_instance = self
-        
+        self.generated = False
         # Ініціалізація меню
         pygame.init()
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
@@ -72,7 +72,9 @@ class GameManager:
             
             elif self.state == 'SEED_INPUT':
                 action = self.seed_menu.handle_event(event)
-                
+                if not self.generated:
+                    self._generate_new_map()
+                    self.generated = True
                 if event.type == pygame.KEYDOWN and self.seed_menu.active:
                     self.last_input_time = pygame.time.get_ticks()
                     self.needs_regeneration = True
@@ -81,8 +83,10 @@ class GameManager:
                     self.state = 'DIFFICULTY'
                 elif action == 'GO_BACK':
                     self.state = 'MENU'
+            else:
+                self.generated = False
 
-            elif self.state == 'DIFFICULTY':
+            if self.state == 'DIFFICULTY':
                 action = self.dif_menu.handle_event(event)
                 if action == 'SET_EASY':
                     self.dif_manager.set_difficulty(1)
