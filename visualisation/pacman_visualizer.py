@@ -11,7 +11,6 @@ from constants import WALL, TUNNEL
 from ghosts.ghost_manager import GhostManager
 from .ghost_visualizer import GhostVisualizer
 from ghosts.behaviors.eaten_behavior import EatenBehavior
-import state
 
 
 class PacManVisualizer(Visualizer):
