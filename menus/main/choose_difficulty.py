@@ -6,7 +6,7 @@ import state
 class DifficultyMenu:
     def __init__(self):
         self.cfg = DifficultyConfig()
-        self.font = pygame.font.SysFont(self.cfg.font, self.cfg.font_size)
+        self.font = pygame.font.SysFont(self.cfg.font, 40, bold=True)
 
         self.button_size = self.cfg.button_size
         button_start_x = (state.game_instance.screen.get_width() - self.button_size[0]) // 2
@@ -30,13 +30,13 @@ class DifficultyMenu:
         ]
 
     def draw(self):
-        state.game_instance.screen.fill((30, 30, 30))
+        state.game_instance.screen.fill((0, 0, 0))
         mouse_pos = pygame.mouse.get_pos()
         for btn in self.buttons:
-            color = (170, 170, 170) if btn['rect'].collidepoint(mouse_pos) else (100, 100, 100)
-            pygame.draw.rect(state.game_instance.screen, color, btn['rect'], border_radius=10)
-            text_surf = self.font.render(btn['text'], True, (255, 255, 255))
-            state.game_instance.screen.blit(text_surf, text_surf.get_rect(center=btn['rect'].center))
+            btn_color  = (255, 255, 0) if btn['rect'].collidepoint(mouse_pos) else (180, 180, 180)
+            pygame.draw.rect(state.game_instance.screen, (0,0,0), btn['rect'], border_radius=10)
+            text = self.font.render(btn['text'], True, btn_color)
+            state.game_instance.screen.blit(text, text.get_rect(center=btn['rect'].center))
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:

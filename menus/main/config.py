@@ -20,8 +20,16 @@ class MainMenuConfig():
 class DifficultyConfig():
     def __init__(self):
 
-        # default values
-        self.button_size = (200, 60)
+        screen_height = pygame.display.get_surface().get_height()
+        screen_width = pygame.display.get_surface().get_width()
 
-        self.font = "Arial"
-        self.font_size = 40
+        self.button_size = (220, 60)
+
+        button_x = (screen_width - self.button_size[0]) // 2
+        self.easy_btn_pos   = (screen_width // 2, 340)
+        self.medium_btn_pos = (screen_width // 2, 420)
+        self.hard_btn_pos   = (screen_width // 2, 500)
+        self.back_btn_pos   = (screen_width // 2, 580)
+
+        self.font       = "Arial"
+        self.font_size  = 40
