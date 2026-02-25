@@ -5,21 +5,27 @@ class GameMenuConfig():
 
         # default values
         screen_width = pygame.display.get_surface().get_width()
-        screen_height = pygame.display.get_surface().get_width()
+        screen_height = pygame.display.get_surface().get_height()
 
-        self.button_size = (200, 60)
-        self.input_seed_size = (250, 50)
+        self.button_size = (220, 60)
+        self.input_seed_size = (300, 50)
 
-        self.button_start_x = (screen_width - self.button_size[0]) // 4
-        self.map_size = (500, 500)
-        self.map_offsets = (500, 500)
+        # Center positioning - map on top
+        self.map_size = (350, 350)
+        self.map_offsets = ((screen_width - 350) // 2, 40)
 
-        self.start_btn_pos = (300, 450)
-        self.back_btn_pos = (50, 50)
-        self.input_seed_pos = (300, 350)
+        # Input field centered, below map with proper spacing
+        input_x = (screen_width - self.input_seed_size[0]) // 2
+        self.input_seed_pos = (input_x, 420)
+        self.label_y = 400
 
-        self.backg_color = (200, 200, 200)
-        self.seed_input_text_color = (100, 100, 100)
+        # Buttons centered horizontally with more spacing
+        self.start_btn_pos = (screen_width // 2, 530)
+        self.back_btn_pos = (screen_width // 2, 620)
+
+        self.backg_color = (0, 0, 0)
+        self.seed_input_text_color = (255, 255, 255)
 
         self.font = "Arial"
         self.font_size = 40
+        self.label_font_size = 28
