@@ -17,7 +17,7 @@ class GameMenu:
             {
                 'text': 'START GAME',
                 'rect': pygame.Rect(*self.gmc.start_btn_pos, *self.gmc.button_size),
-                'action': 'START_GAME'
+                'action': 'GET_DIFFICULTY'
             },
             {
                 'text': 'BACK',
