@@ -14,6 +14,9 @@ from difficulty_manager import DifficultyManager
 from visualisation.config import DifficultyConfig
 
 class GameManager:
+    """
+    Клас-оркестратор гри
+    """
     def __init__(self):
         state.game_instance = self
         self.generated = False
@@ -50,6 +53,9 @@ class GameManager:
 
 
     def run(self):
+        """
+        Запуск циклу життя гри
+        """
         while self.running:
             self._handle_events()
             self._update()
@@ -59,6 +65,9 @@ class GameManager:
         sys.exit()
 
     def _handle_events(self):
+        """
+        Оброка подій гри
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -119,6 +128,9 @@ class GameManager:
                     self.state = 'MENU'
 
     def _update(self):
+        """
+        Обробка оновлень гри
+        """
         if self.state == 'SEED_INPUT' and self.needs_regeneration:
             current_time = pygame.time.get_ticks()
             if current_time - self.last_input_time > self.debounce_delay:
@@ -126,6 +138,9 @@ class GameManager:
                 self.needs_regeneration = False
 
     def _generate_new_map(self):
+        """
+        Перегенерація карти
+        """
         raw_text = self.seed_menu.seed_text
         if not raw_text:
             new_seed = 0
@@ -142,6 +157,9 @@ class GameManager:
         pacman.invincible = False
 
     def _draw(self):
+        """
+        Промальовка меню
+        """
         if self.state == 'MENU':
             self.main_menu.draw()
         elif self.state == 'SEED_INPUT':

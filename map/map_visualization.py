@@ -1,10 +1,22 @@
 import pygame
 from constants import *
 from map.config import MapGeneratorConfig as cfg
+from map.game_map import GameMap
 class MapVisualization:
-    
+    """
+    Клас для візуалізації створеної карти
+    """
+
     @staticmethod
-    def display_map(screen, size, offsets, map):       
+    def display_map(screen:pygame.Surface, size:tuple[int,int], offsets:tuple[int,int], map:GameMap):
+        """
+        Головний метод виводу карти
+        Args:
+            screen(Surface): Екран для відображення
+            size(tuple[int,int]): Розмір екрану, px на px
+            offsets(tuple[int,int]): Відступи від верхнього лівого краю екрану
+            map(GameMap): Карта гри 
+        """    
         screen_width = size[0]
         screen_height = size[1]
         cell_size = min(screen_width // map.width, screen_height // map.height)
@@ -13,7 +25,15 @@ class MapVisualization:
 
 
     @staticmethod
-    def render(map, screen, cell_size, offsets):
+    def render(map:GameMap, screen:pygame.Surface, cell_size:int, offsets:tuple[int,int]):
+        """
+        Рендер карти
+        Args:
+            map(GameMap): Карта гри 
+            screen(Surface): Екран для відображення
+            cell_size(int): Розмір одієї клітинки в px
+            offsets(tuple[int,int]): Відступи від верхнього лівого краю екрану
+        """
         for y in range(map.height):
             for x in range(map.width):
                 rect = pygame.Rect(x * cell_size + offsets[0], y * cell_size + offsets[1], cell_size, cell_size)
@@ -53,7 +73,14 @@ class MapVisualization:
                     MapVisualization.draw_wall_lines(map, screen, cell_size)
 
     @staticmethod
-    def draw_wall_lines(map, screen, cell_size):
+    def draw_wall_lines(map:GameMap, screen:pygame.Surface, cell_size:int):
+        """
+        Промальовка текстур стін (споживає багато ресурсів)
+        Args:
+            map(GameMap): Карта гри 
+            screen(Surface): Екран для відображення
+            cell_size(int): Розмір одієї клітинки в px
+        """
         color = (150, 150, 150)
         texture_map = map.get_texture_map()
         for y in range(map.height):

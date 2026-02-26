@@ -8,7 +8,7 @@ class SeededRandom:
     def randint(self, a, b):
         return self.srand.randint(a, b)
     
-    def randchance(self, chance):
+    def randchance(self, chance) -> bool:
         return self.srand.randint(0, 100) < chance + 1
     
     def randfloat(self):
