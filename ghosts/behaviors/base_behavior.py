@@ -1,5 +1,6 @@
 from typing import Tuple, Any
 class BaseBehavior:
+    '''Базова логіка поведінки для привидів'''
     def get_target(self, pacman: Any) -> Tuple[int, int]:
         """
         Отримує цільову точку для привида.
