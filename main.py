@@ -117,9 +117,5 @@ def test_texture_map(map: Any) -> None:
         print(row)
 
 if __name__ == "__main__":
-    try:
-        main()
-    except:
-        import traceback
-        traceback.print_exc()
-        input("Press Enter to exit...")
+    main()
+    exit(0)

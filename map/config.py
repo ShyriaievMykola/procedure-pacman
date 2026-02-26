@@ -1,5 +1,7 @@
 class MapGeneratorConfig:
-    
+    """
+    Конфіг для генератора мап
+    """
     # розміри будинку привидів
     GHOST_HOUSE_WIDTH = 3
     GHOST_HOUSE_HEIGHT = 2
