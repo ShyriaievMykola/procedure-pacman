@@ -1,5 +1,6 @@
 import pygame
 import sys
+from menus.main.choose_difficulty import DifficultyMenu
 from menus.main.main_menu import MainMenu
 from menus.game.game_menu import GameMenu
 from menus.game.game_over_menu import GameOverMenu
@@ -15,7 +16,7 @@ from visualisation.config import DifficultyConfig
 class GameManager:
     def __init__(self):
         state.game_instance = self
-        
+        self.generated = False
         # Ініціалізація меню
         pygame.init()
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
@@ -43,6 +44,7 @@ class GameManager:
 
         self.dif_config = DifficultyConfig()
         self.dif_manager = DifficultyManager(self.dif_config)
+        self.dif_menu = DifficultyMenu()
         self.dif_manager.set_hard()
 
 
@@ -70,16 +72,34 @@ class GameManager:
             
             elif self.state == 'SEED_INPUT':
                 action = self.seed_menu.handle_event(event)
-                
+                if not self.generated:
+                    self._generate_new_map()
+                    self.generated = True
                 if event.type == pygame.KEYDOWN and self.seed_menu.active:
                     self.last_input_time = pygame.time.get_ticks()
                     self.needs_regeneration = True
 
-                if action == 'START_GAME':
-                    self._generate_new_map()
-                    self.state = 'GAME'
+                if action == 'GET_DIFFICULTY':
+                    self.state = 'DIFFICULTY'
                 elif action == 'GO_BACK':
                     self.state = 'MENU'
+            else:
+                self.generated = False
+
+            if self.state == 'DIFFICULTY':
+                action = self.dif_menu.handle_event(event)
+                if action == 'SET_EASY':
+                    self.dif_manager.set_difficulty(1)
+                    print("Difficulty set to EASY")
+                    self.state = 'GAME'
+                elif action == 'SET_MEDIUM':
+                    self.dif_manager.set_difficulty(2)
+                    print("Difficulty set to MEDIUM")
+                    self.state = 'GAME'
+                elif action == 'SET_HARD':
+                    self.dif_manager.set_difficulty(3)
+                    print("Difficulty set to HARD")
+                    self.state = 'GAME'
 
             elif self.state == 'GAME':
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -126,6 +146,8 @@ class GameManager:
             self.main_menu.draw()
         elif self.state == 'SEED_INPUT':
             self.seed_menu.draw()
+        elif self.state == 'DIFFICULTY':
+            self.dif_menu.draw()
         elif self.state == 'GAME':
             game = PacManVisualizer(self.screen, self.map)
             result = game.run()

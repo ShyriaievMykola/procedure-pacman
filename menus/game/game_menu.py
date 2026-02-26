@@ -28,7 +28,7 @@ class GameMenu:
 
         # Buttons
         self.buttons = [
-            {'text': 'START GAME', 'pos': self.gmc.start_btn_pos, 'action': 'START_GAME'},
+            {'text': 'START GAME', 'pos': self.gmc.start_btn_pos, 'action': 'GET_DIFFICULTY'},
             {'text': 'BACK', 'pos': self.gmc.back_btn_pos, 'action': 'GO_BACK'}
         ]
 
