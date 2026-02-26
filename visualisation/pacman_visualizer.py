@@ -14,7 +14,19 @@ from ghosts.behaviors.eaten_behavior import EatenBehavior
 
 
 class PacManVisualizer(Visualizer):
-    def __init__(self, screen, map_gen):
+    """
+    Клас для візуалізації гри Pac-Man на екрані.
+    Керує рендеренням Pac-Man, привидів, карти та UI елементів. Включає логіку анімацій та камери.
+    """
+    def __init__(self, screen: pygame.Surface, map_gen: object) -> None:
+        """
+        Ініціалізація візуалізатора гри Pac-Man.
+        Args:
+            screen(pygame.Surface): pygame екран для рендеру
+            map_gen(object): об'єкт генератора карти для отримання інформації про карту
+        Returns:
+            None
+        """
         super().__init__(screen, map_gen)
         self.font = pygame.font.Font(None, GC.TEXT_FONT_SIZE)
         self.eaten_pellets = set()
@@ -50,7 +62,14 @@ class PacManVisualizer(Visualizer):
 
         self.dif_config = state.game_instance.dif_config
     
-    def update_logic(self, dt):
+    def update_logic(self, dt: int) -> None:
+        """
+        Оновлює логіку гри: позиції Pac-Man та привидів, колізії, анімацію смерті.
+        Args:
+            dt(int): Дельта часу в мілісекундах з останнього кадру
+        Returns:
+            None
+        """
         self.pacman_timer += dt
         self.ghost_timer += dt
         if self.death_anim_playing:
@@ -108,24 +127,27 @@ class PacManVisualizer(Visualizer):
         # Колізія з привидами
         self.check_ghost_collisions()
     
-    def update_camera(self):
+    def update_camera(self) -> None:
+        """
+        Оновлює позицію камери, щоб слідувати за Pac-Man з плавною анімацією.
+        Args:
+            None
+        Returns:
+            None
+        """
         sh = self.screen.get_height()
         ideal_y = self.render_pos[1] * self.cell - (sh // 2)
         target_cam = max(0, min(self.max_y, ideal_y))
         self.y += (target_cam - self.y) * G.CAMERA_SMOOTHING
     
-    def check_ghost_collisions(self):
-        # for ghost in self.ghost_manager.ghosts:
-        #     if pacman.position == ghost.position:
-        #         if not isinstance(ghost.strategy, EatenBehavior):
-        #             ghost_eaten = pacman.touch_ghost(self.ghost_manager, ghost)
-        #             if ghost_eaten:
-        #                 if not ghost.eaten_in_this_power_up:
-        #                     pacman.eat_ghost()
-        #                     ghost.eaten_in_this_power_up = True
-        #                 self.ghost_manager.be_eaten(ghost)
-        #         
-        #  Дана механіка прописана у pacman.py, це слід видалити
+    def check_ghost_collisions(self) -> None:
+        """
+        Перевіряє колізії Pac-Man з привидами та обробляє анімацію смерті при втраті життя.
+        Args:
+            None
+        Returns:
+            None
+        """
         
         if not pacman.empowered:
             for ghost in self.ghost_manager.ghosts:
@@ -149,7 +171,15 @@ class PacManVisualizer(Visualizer):
         
         self.prev_health = pacman.health
     
-    def draw_pacman(self):
+    def draw_pacman(self) -> None:
+        """
+        Малює Pac-Man на екрані з анімацією рота та напрямку руху.
+        Під час анімації смерті показує спеціальну анімацію зникнення.
+        Args:
+            None
+        Returns:
+            None
+        """
         sx = self.render_pos[0] * self.cell + self.x_offset + self.cell // 2
         sy = self.render_pos[1] * self.cell - self.y + self.cell // 2
         center = (sx, sy)
@@ -197,14 +227,31 @@ class PacManVisualizer(Visualizer):
 
         pygame.draw.polygon(self.screen, C.PACMAN, pts)
     
-    def draw_heart(self, x, y, size, color):
+    def draw_heart(self, x: int, y: int, size: int, color: tuple) -> None:
+        """
+        Малює одне серце (показник здоров'я) на екрані.
+        Args:
+            x(int): X координата для малювання серця
+            y(int): Y координата для малювання серця
+            size(int): Розмір серця в пікселях
+            color(tuple): RGB колір серця
+        Returns:
+            None
+        """
         r = size // 4
         pygame.draw.circle(self.screen, color, (x + r, y + r), r)
         pygame.draw.circle(self.screen, color, (x + 3 * r, y + r), r)
         pts = [(x, y + r), (x + 4 * r, y + r), (x + 2 * r, y + 4 * r)]
         pygame.draw.polygon(self.screen, color, pts)
 
-    def draw_hud(self):
+    def draw_hud(self) -> None:
+        """
+        Малює HUD (інтерфейс гри) з показниками здоров'я Pac-Man у вигляді сердець.
+        Args:
+            None
+        Returns:
+            None
+        """
         size = max(12, self.cell // 2)
         spacing = size + 6
         start_x = GC.TEXT_MARGIN
@@ -212,30 +259,14 @@ class PacManVisualizer(Visualizer):
         for i in range(pacman.health):
             self.draw_heart(start_x + i * spacing, start_y, size, C.HEART)
     
-    # def run(self):
-    #     clock = pygame.time.Clock()
-    #     running = True
-    #     while running:
-    #         dt = clock.tick(60)
-    #         pygame.event.recent = pygame.event.get()
-    #         for e in pygame.event.recent:
-    #             if e.type == pygame.QUIT or (e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE):
-    #                 running = False
-    #                 break
-
-            
-    #         self.update_logic(dt)
-    #         self.update_camera()
-            
-    #         self.draw_map_base(self.eaten_pellets)
-    #         self.ghost_viz.draw_ghosts()
-    #         self.draw_pacman()
-            
-    #         score = self.font.render(f"SCORE: {pacman.points}", True, C.SCORE_TEXT)
-    #         self.screen.blit(score, (GC.TEXT_MARGIN, GC.TEXT_MARGIN))
-    #         self.draw_hud()
-            
-    def run_one_frame(self):
+    def run_one_frame(self) -> None:
+        """
+        Запускає один кадр гри: обробляє события, оновлює логіку та рендерить екран.
+        Args:
+            None
+        Returns:
+            None
+        """
         dt = self.clock.tick(60)
         pygame.event.recent = pygame.event.get()
         for e in pygame.event.recent:
@@ -245,7 +276,6 @@ class PacManVisualizer(Visualizer):
         
         self.update_logic(dt)
         self.update_camera()
-        # Always draw current frame (including death animation if playing)
         self.draw_map_base(self.eaten_pellets)
         self.ghost_viz.draw_ghosts()
         self.draw_pacman()
@@ -253,7 +283,14 @@ class PacManVisualizer(Visualizer):
         score = self.font.render(f"SCORE: {int(pacman.points)}", True, C.SCORE_TEXT)
         self.screen.blit(score, (GC.TEXT_MARGIN, GC.TEXT_MARGIN))
         self.draw_hud()
-    def run(self):
+    def run(self) -> str:
+        """
+        Запускає основний цикл гри до завершення або переходу в меню.
+        Args:
+            None
+        Returns:
+            str: "GAME_OVER" якщо гра закінчилась або "VICTORY" якщо гравець переміг
+        """
         while self.running:
             self.run_one_frame()
             if visualisation.config.state == play_state.GAME_OVER:

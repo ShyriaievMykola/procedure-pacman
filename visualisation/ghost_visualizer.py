@@ -6,7 +6,20 @@ from ghosts.behaviors.eaten_behavior import EatenBehavior
 import pacman
 
 class GhostVisualizer:
-    def __init__(self, visualizer, ghost_manager):
+    """
+    Клас для візуалізації привидів на екрані гри.
+    Керує рендеренням привидів з урахуванням їхніх поточних позицій, станів та напрямків руху.
+    """
+    
+    def __init__(self, visualizer: object, ghost_manager: object) -> None:
+        """
+        Ініціалізація візуалізатора привидів.
+        Args:
+            visualizer(object): Об'єкт основного візуалізатора гри
+            ghost_manager(object): Менеджер привидів, що містить список усіх привидів
+        Returns:
+            None
+        """
         self.vis = visualizer
         self.ghosts = ghost_manager.ghosts
         self.prev_pos = {g: list(g.position) for g in self.ghosts}
@@ -17,24 +30,46 @@ class GhostVisualizer:
             "blue": C.GHOST_BLUE, "orange": C.GHOST_ORANGE
         }
     
-    def update_positions(self, progress):
+    def update_positions(self, progress: float) -> None:
+        """
+        Оновлює позиції привидів для плавної анімації їхнього руху.
+        Обчислює позицію рендеру на основі прогресу між попередньою та поточною позицією.
+        Args:
+            progress(float): Значення від 0 до 1, що визначає прогрес анімації переміщення
+        Returns:
+            None
+        """
         for g in self.ghosts:
             for i in range(2):
                 diff = g.position[i] - self.prev_pos[g][i]
                 if abs(diff) > 2:  # Телепорт
                     self.render_pos[g][i] = g.position[i]
                 else:
-                    # ТОЧНО ЯК У PACMAN - prev + (diff * progress)
                     self.render_pos[g][i] = self.prev_pos[g][i] + (diff * progress)
     
-    def save_positions(self):
+    def save_positions(self) -> None:
+        """
+        Зберігає поточні позиції всіх привидів як попередні позиції для наступної анімації.
+        Args:
+            None
+        Returns:
+            None
+        """
         for g in self.ghosts:
             self.prev_pos[g] = list(g.position)
     
-    def draw_ghosts(self):
+    def draw_ghosts(self) -> None:
+        """
+        Малює всіх привидів на екрані гри з урахуванням їхніх станів та напрямків.
+        Малює тіло привида, ніжки та очі з обрахуванням правильного кольору залежно від поточного стану
+        (звичайна режим, наляканий або з'їдений привід).
+        Args:
+            None
+        Returns:
+            None
+        """
         for g in self.ghosts:
             pos = self.render_pos[g]
-            # ТОЧНО ЯК У PACMAN - використовуємо render_pos напряму
             sx = pos[0] * self.vis.cell + self.vis.x_offset + self.vis.cell // 2
             sy = pos[1] * self.vis.cell - self.vis.y + self.vis.cell // 2
             r = self.vis.cell // 2 - G.PACMAN_RADIUS_OFFSET
