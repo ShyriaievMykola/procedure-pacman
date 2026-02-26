@@ -1,7 +1,8 @@
 import heapq
 import constants
+from typing import Tuple, Any
 
-def a_star(grid, start, goal):
+def a_star(grid: list[list[int]], start: Tuple[int, int], goal: Tuple[int, int]) -> list[Tuple[int, int]]:
     """
     Реалізація алгоритму A* для пошуку найкоротшого шляху.
     Якщо ціль недосяжна, повертається шлях до найближчої точки до цільової.
