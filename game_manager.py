@@ -12,6 +12,8 @@ from visualisation.pacman_visualizer import PacManVisualizer
 from visualisation.visualizer import Visualizer
 from difficulty_manager import DifficultyManager
 from visualisation.config import DifficultyConfig
+import pacman
+
 
 class GameManager:
     def __init__(self):
@@ -135,7 +137,6 @@ class GameManager:
         self.seed = new_seed
         self.map = MapGenerator.generate_map(*self.map_size, self.seed)
         
-        import pacman
         pacman.health = pacman.max_health
         pacman.points = 0
         pacman.empowered = False
