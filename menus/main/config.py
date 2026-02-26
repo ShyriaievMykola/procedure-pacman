@@ -1,6 +1,15 @@
 import state, pygame
 
 class MainMenuConfig():
+    """
+    Конфігурація головного меню гри
+    Attributes:
+        button_size (tuple): Розмір кнопок
+        begin_btn_pos (tuple): Позиція кнопки "Почати гру"
+        quit_btn_pos (tuple): Позиція кнопки "Вихід"
+        font (str): Назва шрифту для відображення тексту
+        font_size (int): Розмір шрифту для відображення тексту
+    """
     def __init__(self):
 
         # default values
@@ -18,6 +27,18 @@ class MainMenuConfig():
         self.font_size = 40
 
 class DifficultyConfig():
+    """
+    Конфігурація меню складності гри
+    Attributes:
+        button_size (tuple): Розмір кнопок
+        font (str): Назва шрифту для відображення тексту
+        easy_btn_pos (tuple): Позиція кнопки "Легко"
+        medium_btn_pos (tuple): Позиція кнопки "Середньо"
+        hard_btn_pos (tuple): Позиція кнопки "Складно"
+        back_btn_pos (tuple): Позиція кнопки "Назад"
+        font (str): Назва шрифту для відображення тексту
+        font_size (int): Розмір шрифту для відображення тексту
+    """
     def __init__(self):
 
         screen_height = pygame.display.get_surface().get_height()

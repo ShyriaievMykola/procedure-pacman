@@ -7,13 +7,13 @@ from ghosts.ghost import Ghost
 from ghosts.ghost_manager import GhostManager
 import visualisation.config
 pygame.event.recent = []
-# Будем робити по ООП, тут буде зазначений стан і позиція пекмена
+
 position : tuple[int, int] 
 old_position : tuple[int, int] # Позиція на попередньому кроці
 movement_direction : tuple[int, int] = (0, 0) # Спочатку пекмен стоїть на місці
 pending_direction : tuple[int, int] = (0, 0) # Напрямок, в який гравець хоче рухатись
                                             # (користувач вказав напрямок але поки там стіна)
-points : int = 0
+points : int = 0 # Кількість очок, які набрав гравець
 
 fruit_value : int = 1000 # Кількість очок за з'їдений фрукт
 
@@ -31,11 +31,11 @@ invincible_start_time : float = 0.0 # Час початку безсмертя �
 invincible : bool = False # Чи є пекмен безсмертним зараз
 starting_points_for_ghost : int = 200
 points_for_ghost : int = starting_points_for_ghost # Кількість очок за з'їденого привида
-multiplier_for_ghost : int = 2.0 # Множник очок за кожного наступного з'їденого привида в одному підсиленні
+multiplier_for_ghost : float = 2.0 # Множник очок за кожного наступного з'їденого привида в одному підсиленні
 
 def get_spawn_position(map : GameMap
                     ) -> tuple[int, int]: # Повертає координати x, y
-    
+    """Повертає координати спавну пекмена, які визначаються як перша клітинка тунелю, в якій є таблетка"""
     for y, row in enumerate(map.grid):
         for x, cell in enumerate(row):
             if cell == TUNNEL and map.pellet_grid[y][x] == PELLET:
@@ -44,6 +44,13 @@ def get_spawn_position(map : GameMap
 def resolve_pend(map : GameMap,
                 ghost_manager : GhostManager | None
                 ):
+    """
+    Розв'язує очікуваний напрямок руху пекмена. 
+    Якщо можна рухатись в напрямку очікування - рухаємось в ньому, 
+    інакше пробуємо рухатись в поточному напрямку поки не зможемо задовільнити очікування, 
+    інакше стоїмо на місці.
+    Також з'їдає таблетку в кінці руху, якщо вона є
+    """
     maze = map.grid
     global movement_direction, pending_direction, position, old_position
     old_position = position
@@ -69,6 +76,9 @@ def eat(position : tuple[int, int], # Точка звідки їмо табле�
         map : GameMap,
         ghost_manager : GhostManager | None
         ):
+    """
+    Визначає що знаходиться в клітинці, де є пекмен, і відповідно реагує на це
+    """
     x, y = position
     grid = map.pellet_grid
     if ghost_manager is not None:
@@ -87,6 +97,9 @@ def eat(position : tuple[int, int], # Точка звідки їмо табле�
         eat_fruit(map, position)
 
 def does_touch_ghost(ghost : Ghost):
+    """
+    Повертає True якщо пекмен торкається привида, інакше False.
+    """
     return ghost.position == position or (ghost.position == old_position and ghost.old_position == position)
     # перша частина - дотик якщо в одній клітинці
     # друга частина - дотик якщо пекмен і привид помінялись місцями за крок
@@ -94,6 +107,9 @@ def does_touch_ghost(ghost : Ghost):
 def get_touched_ghost(position : tuple[int, int], # Позиція пекмена
                     ghost_manager : GhostManager # Менеджер привидів
                     ) -> list: # Повертає привидів яких пекмен торкається
+    """
+    Повертає список привидів, яких пекмен торкається
+    """
     touching = []
     for ghost in ghost_manager.ghosts:
         if does_touch_ghost(ghost):
@@ -101,6 +117,9 @@ def get_touched_ghost(position : tuple[int, int], # Позиція пекмен�
     return touching
 
 def any_pellets_left(map : GameMap) -> bool:
+    """
+    Повертає True якщо на карті залишились таблетки, інакше False.
+    """
     for y in range(map.height):
         for x in range(map.width):
             if map.pellet_grid[y][x] == PELLET and map.grid[y][x] != WALL:  
@@ -110,16 +129,25 @@ def any_pellets_left(map : GameMap) -> bool:
     return False
 
 def go_through_passage_left(map : GameMap):
+    """
+    Переміщує пекмена через ліву телепортаційну трубу на праву
+    """
     global position
     position = map.passage_right
 
 def go_through_passage_right(map : GameMap):
+    """
+    Переміщує пекмена через праву телепортаційну трубу на ліву
+    """
     global position
     position = map.passage_left
 
 def eat_pellet( map : GameMap,
                 position : tuple[int, int] # Точка звідки їмо таблетку
                 ):
+    """
+    З'їдає таблетку в даній клітинці, додає очки, і перевіряє чи не переміг гравець після цього
+    """
     global points
     empty_cell(map, position)
     points += 1
@@ -129,6 +157,9 @@ def eat_pellet( map : GameMap,
 def eat_fruit( map : GameMap,
                 position : tuple[int, int] # Точка звідки їмо таблетку
                 ):
+    """
+    З'їдає фрукт в даній клітинці і додає очки
+    """
     global points
     empty_cell(map, position)
     points += fruit_value
@@ -136,12 +167,21 @@ def eat_fruit( map : GameMap,
 def eat_power_pellet(map : GameMap,
                     position : tuple[int, int] # Точка звідки їмо таблетку
                     ):
+    """
+    З'їдає підсилення в даній клітинці, додає очки, і робить пекмена підсиленим на деякий час
+    """
     global empowered, last_power_time
     empty_cell(map, position)
     last_power_time = time.time()
     empowered = True
 
 def touch_ghost(ghost_manager : GhostManager, ghost : Ghost):
+    """
+    Опрацьовує логіку дотику пекмена до привида. 
+    Якщо пекмен підсилений і привид наляканий - з'їдаємо привида, 
+    інакше якщо пекмен не безсмертний і привид не з'їдений - втрачаємо життя, 
+    робимо пекмена безсмертним на деякий час, і якщо життя закінчились - програємо
+    """
     global health, invincible, invincible_start_time
     if empowered and ghost.is_frightened():
         eat_ghost(ghost_manager, ghost)
@@ -151,16 +191,24 @@ def touch_ghost(ghost_manager : GhostManager, ghost : Ghost):
             game_over()
         invincible = True
         invincible_start_time = time.time()
-        return False
-    return False
 
 def game_over():
+    """
+    Опрацьовує логіку програшу гравця. Відображає екран програшу і чекає на дію гравця
+    """
     visualisation.config.state = visualisation.config.play_state.GAME_OVER
 
 def victory():
+    """
+    Вітаю! ви перемогли! Опрацьовує логіку перемоги гравця. Відображає екран перемоги і чекає на дію гравця
+    """
     visualisation.config.state = visualisation.config.play_state.VICTORY
 
 def eat_ghost(ghost_manager : GhostManager, ghost : Ghost):
+    """
+    З'їдає привида, додає очки, і відображає повідомлення про з'їдання привида
+    З кожним наступним з'їденим привидом в одному підсиленні кількість очок за нього збільшується в кілька разів
+    """
     global points, points_for_ghost
     points += points_for_ghost
     print(f"Ate ghost for {points_for_ghost} points!")
@@ -170,11 +218,18 @@ def eat_ghost(ghost_manager : GhostManager, ghost : Ghost):
 def empty_cell( map : GameMap,
                 position : tuple[int, int] # Точка звідки їмо таблетку
                 ):
+    """
+    Змінює клітинку на порожню після поїдання таблетки або фрукта
+    """
     grid = map.pellet_grid
     x, y = position
     grid[y][x] = EMPTY
 
 def control():
+    """
+    Визначає напрямок руху пекмена на основі натиснутих клавіш. Зберігає його в pending_direction,
+    щоб resolve_pend міг його розв'язати і застосувати.
+    """
     global pending_direction
     for event in pygame.event.recent:
         if event.type == pygame.KEYDOWN:
@@ -188,6 +243,10 @@ def control():
                 pending_direction = (1, 0)
 
 def old_control():
+    """
+    Стара версія control, яка використовує бібліотеку keyboard замість pygame для визначення натиснутих клавіш.
+    Потрібна для роботи в консолі, де немає доступу до подій pygame.
+    """
     global pending_direction
     if keyboard.is_pressed('w') or keyboard.is_pressed('up'):
         pending_direction = (0, -1)
@@ -199,6 +258,10 @@ def old_control():
         pending_direction = (1, 0)
 
 def maybe_lose_power():
+    """
+    Перевіряє чи не закінчився час підсилення, і якщо так - вимикає його 
+    і скидає кількість очок за привида до початкового значення
+    """
     global empowered, almost_lost_power, points_for_ghost
     if time.time() - last_power_time > power_span - almost_lost_power_span:
         almost_lost_power = True
@@ -208,6 +271,9 @@ def maybe_lose_power():
         almost_lost_power = False
 
 def maybe_lose_invincibility():
+    """
+    Перевіряє чи не закінчився час безсмертя, і якщо так - вимикає його
+    """
     global invincible
     if time.time() - invincible_start_time > invincible_span:
         invincible = False
@@ -215,6 +281,9 @@ def maybe_lose_invincibility():
 def update( map : GameMap,
             ghost_manager : GhostManager | None
             ):
+    """
+    Цю функцію треба викликати кожного кроку, щоб оновити стан гри
+    """
     control()
     resolve_pend(map, ghost_manager)
     if empowered:
@@ -225,6 +294,9 @@ def update( map : GameMap,
 def old_update( map : GameMap,
                 ghost_manager : GhostManager | None
                 ):
+    """
+    Старе оновлення, яке використовує old_control замість control для роботи в консолі
+    """
     old_control()
     resolve_pend(map, ghost_manager)
     if empowered:
