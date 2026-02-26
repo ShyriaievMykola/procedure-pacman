@@ -250,7 +250,7 @@ class PacManVisualizer(Visualizer):
         self.ghost_viz.draw_ghosts()
         self.draw_pacman()
         
-        score = self.font.render(f"SCORE: {pacman.points}", True, C.SCORE_TEXT)
+        score = self.font.render(f"SCORE: {int(pacman.points)}", True, C.SCORE_TEXT)
         self.screen.blit(score, (GC.TEXT_MARGIN, GC.TEXT_MARGIN))
         self.draw_hud()
     def run(self):
