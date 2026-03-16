@@ -9,3 +9,6 @@ exclude =
 extend-ignore =
     W291,
     W293
+
+format = html
+htmldir = flake8_report
