@@ -261,7 +261,7 @@ class PacManVisualizer(Visualizer):
     
     def run_one_frame(self) -> None:
         """
-        Запускає один кадр гри: обробляє события, оновлює логіку та рендерить екран.
+        Запускає один кадр гри: обробляє події, оновлює логіку та рендерить екран.
         Args:
             None
         Returns:
@@ -283,6 +283,7 @@ class PacManVisualizer(Visualizer):
         score = self.font.render(f"SCORE: {int(pacman.points)}", True, C.SCORE_TEXT)
         self.screen.blit(score, (GC.TEXT_MARGIN, GC.TEXT_MARGIN))
         self.draw_hud()
+        
     def run(self) -> str:
         """
         Запускає основний цикл гри до завершення або переходу в меню.
