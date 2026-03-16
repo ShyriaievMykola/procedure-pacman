@@ -1,6 +1,7 @@
 from ghosts.behaviors.base_behavior import BaseBehavior
 from typing import Tuple, Any
 
+
 class ScatterBehavior(BaseBehavior):
     '''Логіка поведінки "розсіяний" для привидів'''
     def __init__(self, color: str, map_width: int, map_height: int):
