@@ -1,3 +1,7 @@
 .venv
 .vscode
 __pycache__
+
+flake8_report/
+pytest_report.html
+.pytest_cache/
