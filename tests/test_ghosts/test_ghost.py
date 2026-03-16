@@ -3,8 +3,8 @@ from unittest.mock import MagicMock
 from ghosts.ghost import Ghost
 from ghosts.behaviors.scatter_behavior import ScatterBehavior
 from ghosts.behaviors.frightened_behavior import FrightenedBehavior
-from ghosts.behaviors.eaten_behavior import EatenBehavior
 from constants import TUNNEL, WALL
+
 
 @pytest.fixture
 def simple_grid():
@@ -17,10 +17,12 @@ def simple_grid():
         [TUNNEL, TUNNEL, TUNNEL, TUNNEL, TUNNEL]
     ]
 
+
 @pytest.fixture
 def ghost(simple_grid):
     """Створює екземпляр привида для тестів"""
     return Ghost(position=(0, 0), color="red", grid=simple_grid)
+
 
 class TestGhostLogic:
     
@@ -54,7 +56,7 @@ class TestGhostLogic:
         # Встановлюємо ціль праворуч від привида
         ghost.target_tile = (2, 0) 
         
-        old_pos = ghost.position # (0, 0)
+        old_pos = ghost.position  # (0, 0)
         new_pos = ghost.move()
         
         # Перевіряємо, що позиція змінилася

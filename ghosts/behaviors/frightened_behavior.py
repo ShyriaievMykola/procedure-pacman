@@ -2,6 +2,7 @@ from ghosts.behaviors.base_behavior import BaseBehavior
 import random
 from typing import Tuple, Any
 
+
 class FrightenedBehavior(BaseBehavior):
     '''Логіка поведінки "переляканий" для привидів'''
     def __init__(self, ghost: Any, map_width: int, map_height: int):

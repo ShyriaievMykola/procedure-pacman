@@ -5,13 +5,15 @@ from ghosts.behaviors.chase_behavior import ChaseBehavior
 from ghosts.behaviors.frightened_behavior import FrightenedBehavior
 from ghosts.behaviors.eaten_behavior import EatenBehavior
 
+
 # Допоміжні об'єкти для тестів
 @pytest.fixture
 def mock_pacman():
     pacman = MagicMock()
     pacman.position = (10, 10)
-    pacman.movement_direction = (1, 0) # Рух вправо
+    pacman.movement_direction = (1, 0)  # Рух вправо
     return pacman
+
 
 @pytest.fixture
 def mock_ghost():
@@ -20,6 +22,7 @@ def mock_ghost():
     ghost.position = (5, 5)
     ghost.scatter_target = (0, 0)
     return ghost
+
 
 class TestScatterBehavior:
     """Тести для ScatterBehavior"""
@@ -40,6 +43,7 @@ class TestScatterBehavior:
         strategy = ScatterBehavior("orange", 20, 20)
         assert strategy.get_target(None, mock_pacman) == (19, 19)
 
+
 class TestChaseBehavior:
     """Тести для ChaseBehavior"""
 
@@ -50,7 +54,7 @@ class TestChaseBehavior:
 
     def test_pink_chase_target(self, mock_ghost, mock_pacman):
         mock_ghost.color = "pink"
-        mock_pacman.movement_direction = (1, 0) # Вправо
+        mock_pacman.movement_direction = (1, 0)  # Вправо
         strategy = ChaseBehavior(mock_ghost, 20, 20)
         # Pink цілиться на 4 клітинки попереду
         # (10 + (-1*4), 10 + (0*4)) = (6, 10)
@@ -58,7 +62,7 @@ class TestChaseBehavior:
 
     def test_orange_chase_far(self, mock_ghost, mock_pacman):
         mock_ghost.color = "orange"
-        mock_ghost.position = (0, 0) # Далеко від Пакмена (відстань > 8)
+        mock_ghost.position = (0, 0)  # Далеко від Пакмена (відстань > 8)
         mock_ghost.scatter_target = (19, 19)
         strategy = ChaseBehavior(mock_ghost, 20, 20)
         # Якщо далеко, цілиться в Пакмена
@@ -66,11 +70,12 @@ class TestChaseBehavior:
 
     def test_orange_chase_near(self, mock_ghost, mock_pacman):
         mock_ghost.color = "orange"
-        mock_ghost.position = (9, 9) # Близько до Пакмена (відстань <= 8)
+        mock_ghost.position = (9, 9)  # Близько до Пакмена (відстань <= 8)
         mock_ghost.scatter_target = (19, 19)
         strategy = ChaseBehavior(mock_ghost, 20, 20)
         # Якщо близько, цілиться в свій scatter кут
         assert strategy.get_target(mock_ghost, mock_pacman) == (19, 19)
+
 
 class TestFrightenedBehavior:
     """Тести для FrightenedBehavior"""
@@ -92,6 +97,7 @@ class TestFrightenedBehavior:
         
         # Ціль не повинна змінитись
         assert target1 == target2
+
 
 class TestEatenBehavior:
     """Тести для EatenBehavior"""
