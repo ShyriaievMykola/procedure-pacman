@@ -24,6 +24,7 @@ def ghost(simple_grid):
     return Ghost(position=(0, 0), color="red", grid=simple_grid)
 
 
+@pytest.mark.ghost_logic
 class TestGhostLogic:
     
     def test_initialization(self, ghost):
@@ -51,6 +52,7 @@ class TestGhostLogic:
         assert ghost.target_tile == target
         assert target == (0, 0)
 
+    @pytest.mark.pathfinding
     def test_move_updates_position(self, ghost):
         """Перевірка фізичного переміщення привида по сітці"""
         # Встановлюємо ціль праворуч від привида
