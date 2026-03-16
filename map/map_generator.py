@@ -59,7 +59,7 @@ class MapGenerator:
         MapGenerator.clear_pellet_grid(map)
         MapGenerator.spawn_pellets(map, srand)
         MapGenerator.spawn_fruit(map)
-        MapGenerator.spawn_power(map)
+        MapGenerator.spawn_power(map, srand)
         return map
 
     @staticmethod
@@ -102,11 +102,12 @@ class MapGenerator:
         map.pellet_grid[y][x] = FRUIT
 
     @staticmethod
-    def spawn_power(map: GameMap):
+    def spawn_power(map: GameMap, srand: SeededRandom):
         """
         Спавн підсилень для поїдання привидів
         Args:
             map(GameMap): Карта гри
+            srand(SeededRandom): Випадкові числа за фіксованим сідом
         """
         power_count = (map.height * map.width * cfg.POWER_COVERAGE / 100) // 1
 
@@ -116,7 +117,7 @@ class MapGenerator:
             for x in range(map.width)
             if map.pellet_grid[y][x] == PELLET
         ]
-        placed = [random.choice(valid_cells)]
+        placed = [srand.srand.choice(valid_cells)]
 
         while len(placed) < power_count:
             best_cell = None
