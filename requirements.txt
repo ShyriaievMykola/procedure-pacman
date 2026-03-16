@@ -1,2 +1,6 @@
 pygame
 keyboard
+flake8
+pytest
+flake8-html
+pytest-html
