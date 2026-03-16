@@ -3,7 +3,10 @@ import time
 import pacman
 from constants import *
 from map.game_map import GameMap
-from ghosts.behaviors import FrightenedBehavior, EatenBehavior, ScatterBehavior, ChaseBehavior
+from ghosts.behaviors.scatter_behavior import ScatterBehavior
+from ghosts.behaviors.chase_behavior import ChaseBehavior
+from ghosts.behaviors.frightened_behavior import FrightenedBehavior
+from ghosts.behaviors.eaten_behavior import EatenBehavior
 from ghosts.ghost_manager import GhostManager
 import visualisation.config
 
