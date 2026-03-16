@@ -6,6 +6,7 @@ from ghosts.behaviors.eaten_behavior import EatenBehavior
 import time
 from typing import List, Tuple, Any
 
+
 class GhostManager:
     """
     Контролер, що керує станом та поведінкою всіх привидів у грі.
@@ -13,7 +14,7 @@ class GhostManager:
     Відповідає за глобальні таймери (Chase/Scatter), обробку станів переляку 
     після з'їдання таблетки та координацію взаємодії привидів з Пакменом.
     """
-    def __init__(self, map: Any):
+    def __init__(self, game_map: Any):
         """
         Ініціалізує менеджер привидів та створює початковий набір привидів.
 
@@ -21,10 +22,11 @@ class GhostManager:
             game_map (Any): Об'єкт мапи, що містить сітку (grid) та координати дверей (ghost_door).
         """
         self.ghosts: List[Ghost] = []
-        self.grid: List[List[int]] = map.grid
+        self.grid: List[List[int]] = game_map.grid
         self.map_width: int = len(self.grid[0])
         self.map_height: int = len(self.grid)
-        self.ghost_door: Tuple[int, int] = (map.ghost_door[0], map.ghost_door[1] - 1)
+        door_x, door_y = game_map.ghost_door
+        self.ghost_door: Tuple[int, int] = (door_x, door_y - 1)
         self.intervals: List[int] = [5, 20, 5, 20, 4, 20, 4]
         self.current_interval_index: int = 0
         self.last_switch_time: float = time.time()

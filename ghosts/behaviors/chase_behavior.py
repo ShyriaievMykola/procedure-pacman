@@ -1,6 +1,7 @@
 from ghosts.behaviors.base_behavior import BaseBehavior
 from typing import Tuple, Any
 
+
 class ChaseBehavior(BaseBehavior):
     """
     Логіка переслідування для привидів.
