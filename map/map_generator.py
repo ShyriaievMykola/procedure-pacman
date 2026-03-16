@@ -2,16 +2,16 @@ from collections import deque
 import math
 import random
 
-from constants import *
+from constants import WALL, TUNNEL, PELLET, POWER, FRUIT, EMPTY
 from map.game_map import GameMap
 from seeded_random import SeededRandom
 from map.config import MapGeneratorConfig as cfg
 
+
 class MapGenerator:        
-        
-    
+
     @staticmethod
-    def generate_map(width:int, height:int, seed:int=None) -> GameMap:
+    def generate_map(width: int, height: int, seed: int = None) -> GameMap:
         """
         Метод для генерації карти
         Args:
@@ -22,7 +22,7 @@ class MapGenerator:
             GameMap
         """
 
-        map = GameMap(None, height, width, None, None, None, None, None, None, None)
+        map = GameMap(height=height, width=width)
 
         if (seed is not None):
             map.seed = seed
@@ -30,7 +30,7 @@ class MapGenerator:
         else:
             map.seed = random.randint(0, 100000)
             srand = SeededRandom(map.seed)
-        
+
         map.grid = [[WALL for _ in range(width)] for _ in range(height)]
         map.untouchable_zones = [[False for _ in range(width)] for _ in range(height)]
 
@@ -63,7 +63,7 @@ class MapGenerator:
         return map
 
     @staticmethod
-    def clear_pellet_grid(map:GameMap):
+    def clear_pellet_grid(map: GameMap):
         """
         Очищення карти підсилень
         Args:
@@ -72,7 +72,7 @@ class MapGenerator:
         map.pellet_grid = [[EMPTY for _ in range(map.width)] for _ in range(map.height)]
 
     @staticmethod
-    def spawn_pellets(map:GameMap, srand:SeededRandom):
+    def spawn_pellets(map: GameMap, srand: SeededRandom):
         """
         Генерація монеток
         Args:
@@ -91,7 +91,7 @@ class MapGenerator:
                     map.pellet_grid[y][x] = EMPTY
 
     @staticmethod
-    def spawn_fruit(map:GameMap):
+    def spawn_fruit(map: GameMap):
         """
         Спавн фрукту
         Args:
@@ -102,7 +102,7 @@ class MapGenerator:
         map.pellet_grid[y][x] = FRUIT
 
     @staticmethod
-    def spawn_power(map:GameMap):
+    def spawn_power(map: GameMap):
         """
         Спавн підсилень для поїдання привидів
         Args:
@@ -138,7 +138,7 @@ class MapGenerator:
             map.pellet_grid[power[1]][power[0]] = POWER
 
     @staticmethod
-    def dist(a:tuple[int, int], b:tuple[int, int]) -> float:
+    def dist(a: tuple[int, int], b: tuple[int, int]) -> float:
         """
         Визначення відстані по координатам
         Args:
@@ -148,7 +148,7 @@ class MapGenerator:
         return math.hypot(a[0] - b[0], a[1] - b[1])
 
     @staticmethod
-    def grow_branches(map:GameMap, srand:SeededRandom):
+    def grow_branches(map: GameMap, srand: SeededRandom):
         """
         Розростання гілок тунелів
         Args:
@@ -158,7 +158,7 @@ class MapGenerator:
         tries = 3       
         iteration = 1 
         while tries > 0:
-            print (f"iteration: {iteration}")
+            print(f"iteration: {iteration}")
             iteration += 1
             tries -= 1
             for y in range(1, map.height - 1):
@@ -166,13 +166,14 @@ class MapGenerator:
                     if map.grid[y][x] == WALL:
                         if srand.randchance(30):
                             carved = MapGenerator.carve_tunnel(x, y, map)
-                            if carved: tries = 3
+                            if carved: 
+                                tries = 3
 
                     elif MapGenerator.is_forming_pattern(x, y, map) and srand.randchance(50):
                         MapGenerator.make_untouchable_zone(x, y, map, srand)
 
     @staticmethod
-    def carve_tunnel(x:int, y:int, map:GameMap):
+    def carve_tunnel(x: int, y: int, map: GameMap):
         """
         Вибивання тунелю - перетворює стіну на тунель за відповідності умовам
         Args:
@@ -182,14 +183,13 @@ class MapGenerator:
         """
         has_tunnel = MapGenerator.has_adjacent_tunnel(x, y, map)
         is_forming_square = MapGenerator.is_forming_square(x, y, map.grid)
-        if (has_tunnel and not is_forming_square
-            and not map.untouchable_zones[y][x]):
+        if (has_tunnel and not is_forming_square and not map.untouchable_zones[y][x]):
             map.grid[y][x] = TUNNEL
             return True
         return False
 
     @staticmethod
-    def make_untouchable_zone(x:int, y:int, map:GameMap, srand:SeededRandom):
+    def make_untouchable_zone(x: int, y: int, map: GameMap, srand: SeededRandom):
         """
         Позначення зони недоторканою за відповідності умовам
         Args:
@@ -205,9 +205,8 @@ class MapGenerator:
                 if 0 <= px < map.width and 0 <= py < map.height and srand.randchance(75):
                     map.untouchable_zones[py][px] = True
 
-    
     @staticmethod
-    def carve_ghost_room(map:GameMap) -> tuple[tuple[int, int], tuple[int, int], tuple[int, int]]:
+    def carve_ghost_room(map: GameMap) -> tuple[tuple[int, int], tuple[int, int], tuple[int, int]]:
         """
         Викарбовування кімнати з привидами
         Args:
@@ -229,7 +228,6 @@ class MapGenerator:
             for x in range(start_x, start_x + cfg.GHOST_HOUSE_WIDTH):
                 map.grid[y][x] = TUNNEL
 
-
         # вирізати тунелі навколо будинку привидів
         for x in range(start_x - 2, start_x + cfg.GHOST_HOUSE_WIDTH + 2):
             map.grid[start_y + cfg.GHOST_HOUSE_HEIGHT + 1][x] = TUNNEL
@@ -249,7 +247,7 @@ class MapGenerator:
         return ghost_x, ghost_y, ghost_door
     
     @staticmethod
-    def carve_passages(map:GameMap):
+    def carve_passages(map: GameMap):
         """
         Викарбовування проходів зліва та справа карти
         Args:
@@ -272,7 +270,7 @@ class MapGenerator:
         return passage_left, passage_right
 
     @staticmethod
-    def path_exists(grid:list[list[int]], start:tuple[int,int], exit:tuple[int,int]) -> bool:
+    def path_exists(grid: list[list[int]], start: tuple[int, int], exit: tuple[int, int]) -> bool:
         """
         Знаходить чи є шлях між 2 точками на сітці
         Args:
@@ -299,8 +297,8 @@ class MapGenerator:
             if (x, y) == (ex, ey):
                 return True
 
-            for dx, dy in [(-1,0),(1,0),(0,-1),(0,1)]:
-                nx, ny = x+dx, y+dy
+            for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                nx, ny = x + dx, y + dy
                 if 0 <= nx < w and 0 <= ny < h:
                     if not visited[ny][nx] and grid[ny][nx] == TUNNEL:
                         visited[ny][nx] = True
@@ -309,7 +307,7 @@ class MapGenerator:
         return False
 
     @staticmethod
-    def has_adjacent_tunnel(x:int, y:int, map:GameMap) -> bool:
+    def has_adjacent_tunnel(x: int, y: int, map: GameMap) -> bool:
         """
         Перевірка чи є тунелі поруч з точкою
         Args:
@@ -326,7 +324,7 @@ class MapGenerator:
         return False
 
     @staticmethod
-    def is_forming_square(x:int, y:int, grid:list[list[int]]) -> bool:
+    def is_forming_square(x: int, y: int, grid: list[list[int]]) -> bool:
         """
         Перевірка чи точка(стіна) є частиною квадрата
         Args:
@@ -348,7 +346,7 @@ class MapGenerator:
         return False
 
     @staticmethod
-    def is_forming_pattern(x:int, y:int, map:GameMap) -> bool:
+    def is_forming_pattern(x: int, y: int, map: GameMap) -> bool:
         """
         Перевірка чи точка(стіна) є частиною паттерну
         Args:
@@ -419,4 +417,3 @@ class MapGenerator:
                 return True
 
         return False
-    

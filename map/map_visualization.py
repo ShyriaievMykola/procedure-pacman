@@ -1,14 +1,16 @@
 import pygame
-from constants import *
+from constants import WALL, PELLET, POWER, FRUIT
 from map.config import MapGeneratorConfig as cfg
 from map.game_map import GameMap
+
+
 class MapVisualization:
     """
     Клас для візуалізації створеної карти
     """
 
     @staticmethod
-    def display_map(screen:pygame.Surface, size:tuple[int,int], offsets:tuple[int,int], map:GameMap):
+    def display_map(screen: pygame.Surface, size: tuple[int, int], offsets: tuple[int, int], map: GameMap):
         """
         Головний метод виводу карти
         Args:
@@ -23,9 +25,8 @@ class MapVisualization:
         
         MapVisualization.render(map, screen, cell_size, offsets)
 
-
     @staticmethod
-    def render(map:GameMap, screen:pygame.Surface, cell_size:int, offsets:tuple[int,int]):
+    def render(map: GameMap, screen: pygame.Surface, cell_size: int, offsets: tuple[int, int]):
         """
         Рендер карти
         Args:
@@ -64,16 +65,16 @@ class MapVisualization:
                     uy = y*cell_size + cell_size//2 + offsets[1]
                     pygame.draw.circle(screen, (255, 205, 0), (ux, uy), 6)
                 
-                if (map.untouchable_zones[y][x] == True and cfg.DEBUG_VIEW):
-                    ux = x*cell_size + cell_size//2  + offsets[0]
-                    uy = y*cell_size + cell_size//2  + offsets[1]
+                if (map.untouchable_zones[y][x] is True and cfg.DEBUG_VIEW):
+                    ux = x*cell_size + cell_size//2 + offsets[0]
+                    uy = y*cell_size + cell_size//2 + offsets[1]
                     pygame.draw.circle(screen, (255, 0, 0), (ux, uy), 2)
 
                 if (cfg.ADVANCED_WALLS_VIEW):
                     MapVisualization.draw_wall_lines(map, screen, cell_size)
 
     @staticmethod
-    def draw_wall_lines(map:GameMap, screen:pygame.Surface, cell_size:int):
+    def draw_wall_lines(map: GameMap, screen: pygame.Surface, cell_size: int):
         """
         Промальовка текстур стін (споживає багато ресурсів)
         Args:
@@ -102,5 +103,3 @@ class MapVisualization:
                         pygame.draw.line(screen, color, bot_l, bot_r, 2)
                     if not texture & 8:
                         pygame.draw.line(screen, color, top_l, bot_l, 2)
-
-
