@@ -1,9 +1,10 @@
-from typing import List, Tuple, Optional, Any
+from typing import List, Tuple, Optional
 from ghosts.behaviors.base_behavior import BaseBehavior
 from ghosts.behaviors.scatter_behavior import ScatterBehavior
 from ghosts.utils.pathfinding import a_star
 from ghosts.behaviors.frightened_behavior import FrightenedBehavior
 from ghosts.behaviors.eaten_behavior import EatenBehavior
+
 
 class Ghost:
     '''

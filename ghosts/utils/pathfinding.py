@@ -1,6 +1,7 @@
 import heapq
 import constants
-from typing import Tuple, Any
+from typing import Tuple
+
 
 def a_star(grid: list[list[int]], start: Tuple[int, int], goal: Tuple[int, int]) -> list[Tuple[int, int]]:
     """

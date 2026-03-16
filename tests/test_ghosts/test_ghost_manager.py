@@ -4,15 +4,17 @@ from unittest.mock import MagicMock, patch
 from ghosts.ghost_manager import GhostManager
 from ghosts.behaviors.frightened_behavior import FrightenedBehavior
 from ghosts.behaviors.eaten_behavior import EatenBehavior
-from constants import TUNNEL, WALL
+from constants import TUNNEL
+
 
 @pytest.fixture
 def mock_map():
     """Створює мок об'єкта карти з необхідними атрибутами"""
     m = MagicMock()
     m.grid = [[TUNNEL] * 10 for _ in range(10)]
-    m.ghost_door = (5, 5) # Двері будинку
+    m.ghost_door = (5, 5)  # Двері будинку
     return m
+
 
 @pytest.fixture
 def mock_pacman():
@@ -23,17 +25,19 @@ def mock_pacman():
     p.empowered = False
     return p
 
+
 @pytest.fixture
 def manager(mock_map):
     """Ініціалізує менеджер привидів"""
     return GhostManager(mock_map)
 
+
 class TestGhostManager:
 
     def test_initialization(self, manager):
         """Перевірка початкового стану менеджера"""
-        assert len(manager.ghosts) == 4 # Створюється 4 привиди
-        assert manager.current_global_mode == "scatter" # Початковий режим
+        assert len(manager.ghosts) == 4  # Створюється 4 привиди
+        assert manager.current_global_mode == "scatter"  # Початковий режим
         assert manager.is_frightened is False
 
     def test_switch_to_frightened_mode(self, manager, mock_pacman):
