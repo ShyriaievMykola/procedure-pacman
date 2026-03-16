@@ -1,5 +1,6 @@
 from constants import WALL, PELLET, POWER, FRUIT
 
+
 class GameMap:
     """
     Клас карти, включає всі дані про згенеровану карту.
@@ -15,7 +16,18 @@ class GameMap:
         passage_left (tuple[int, int]): Координати (x,y) лівого проходу
         passage_right (tuple[int, int]): Координати (x,y) правого проходу
     """
-    def __init__(self, seed, height, width, grid, pellet_grid, ghost_x, ghost_y, ghost_door, passage_left, passage_right):
+    def __init__(
+            self,
+            seed=None,
+            height=None,
+            width=None,
+            grid=None,
+            pellet_grid=None,
+            ghost_x=None,
+            ghost_y=None, 
+            ghost_door=None,
+            passage_left=None,
+            passage_right=None):
         self.seed = seed
         self.height = height
         self.width = width
@@ -27,8 +39,7 @@ class GameMap:
         self.passage_left = passage_left
         self.passage_right = passage_right
 
-    
-    def print_grid(self, pacman_position:tuple[int, int]=None, ghost_positions=None, points:int=0, health:int=3):
+    def print_grid(self, pacman_position: tuple[int, int] = None, ghost_positions = None, points: int = 0, health: int = 3):
         """
         Друк карти у консольному вигляді
         Args:
@@ -52,14 +63,17 @@ class GameMap:
                     row += "███"
                 else:
                     pellet = self.pellet_grid[y][x]
-                    if pellet == PELLET: row += " . "
-                    elif pellet == POWER: row += " o "
-                    elif pellet == FRUIT: row += " f "
-                    else: row += "   "
+                    if pellet == PELLET: 
+                        row += " . "
+                    elif pellet == POWER:
+                        row += " o "
+                    elif pellet == FRUIT:
+                        row += " f "
+                    else: 
+                        row += "   "
             print(row)
         print(f"\nSCORE: {points} | LIVES: {health}")
 
-   
     def get_texture_map(self):
         """
         Отримання мапи текстур для покращеного промальвування стін
@@ -85,6 +99,3 @@ class GameMap:
                     
                     texture_map[y][x] = mask
         return texture_map
-
-
-
