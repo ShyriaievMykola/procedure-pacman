@@ -32,6 +32,7 @@ def manager(mock_map):
     return GhostManager(mock_map)
 
 
+@pytest.mark.ghost_manager
 class TestGhostManager:
 
     def test_initialization(self, manager):
@@ -49,6 +50,7 @@ class TestGhostManager:
         for ghost in manager.ghosts:
             assert isinstance(ghost.strategy, FrightenedBehavior)
 
+    @pytest.mark.powerups
     def test_return_from_frightened_mode(self, manager, mock_pacman):
         """Перевірка повернення до нормального режиму після закінчення підсилення"""
         # Спочатку входимо в режим переляку

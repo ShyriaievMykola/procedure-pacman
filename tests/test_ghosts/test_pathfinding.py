@@ -13,6 +13,7 @@ def grid():
     ]
 
 
+@pytest.mark.pathfinding
 def test_straight_path():
     # Шлях по прямій зверху вниз
     grid_plain = [[TUNNEL, TUNNEL, TUNNEL]]
@@ -20,6 +21,7 @@ def test_straight_path():
     assert path == [(1, 0), (2, 0)]
 
 
+@pytest.mark.pathfinding
 def test_path_around_wall(grid):
     # Шлях з (0,0) в (2,2) в обхід стіни на (1,1)
     path = a_star(grid, (0, 0), (2, 2))

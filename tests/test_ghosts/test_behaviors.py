@@ -24,6 +24,7 @@ def mock_ghost():
     return ghost
 
 
+@pytest.mark.ghost_logic
 class TestScatterBehavior:
     """Тести для ScatterBehavior"""
     
@@ -44,6 +45,7 @@ class TestScatterBehavior:
         assert strategy.get_target(None, mock_pacman) == (19, 19)
 
 
+@pytest.mark.ghost_logic
 class TestChaseBehavior:
     """Тести для ChaseBehavior"""
 
@@ -77,6 +79,7 @@ class TestChaseBehavior:
         assert strategy.get_target(mock_ghost, mock_pacman) == (19, 19)
 
 
+@pytest.mark.ghost_logic
 class TestFrightenedBehavior:
     """Тести для FrightenedBehavior"""
 
