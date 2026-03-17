@@ -5,12 +5,14 @@ import pygame
 
 pygame.font.init()
 
+
 @pytest.fixture
 def mock_screen():
     screen = MagicMock()
     screen.get_width.return_value = 800
     screen.get_height.return_value = 600
     return screen
+
 
 @pytest.fixture
 def mock_map_gen():
@@ -19,6 +21,7 @@ def mock_map_gen():
     map_gen.height = 15
     map_gen.get_texture_map.return_value = []
     return map_gen
+
 
 @pytest.fixture
 def pacman_viz(mock_screen, mock_map_gen):
@@ -41,6 +44,7 @@ def pacman_viz(mock_screen, mock_map_gen):
         
         yield viz
 
+
 @pytest.mark.game_logic
 def test_ghost_collision_loses_life(pacman_viz):
     """Тест: перевірка логіки, коли Пакман втрачає ОДНЕ життя"""
@@ -50,9 +54,10 @@ def test_ghost_collision_loses_life(pacman_viz):
     
     pacman_viz.check_ghost_collisions()
     
-    assert pacman_viz.death_anim_playing == True
-    assert pacman_viz.death_anim_game_over == False
-    assert pacman_viz.reset_after_death == True
+    assert pacman_viz.death_anim_playing is True
+    assert pacman_viz.death_anim_game_over is False
+    assert pacman_viz.reset_after_death is True
+
 
 @pytest.mark.game_logic
 def test_ghost_collision_game_over(pacman_viz):
@@ -63,9 +68,10 @@ def test_ghost_collision_game_over(pacman_viz):
     
     pacman_viz.check_ghost_collisions()
     
-    assert pacman_viz.death_anim_playing == True
-    assert pacman_viz.death_anim_game_over == True
-    assert pacman_viz.reset_after_death == False
+    assert pacman_viz.death_anim_playing is True
+    assert pacman_viz.death_anim_game_over is True
+    assert pacman_viz.reset_after_death is False
+
 
 @pytest.mark.math_logic
 def test_update_camera_smoothing(pacman_viz):

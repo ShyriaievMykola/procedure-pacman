@@ -5,6 +5,7 @@ from ghosts.behaviors.frightened_behavior import FrightenedBehavior
 from ghosts.behaviors.eaten_behavior import EatenBehavior
 import pacman
 
+
 class GhostVisualizer:
     """
     Клас для візуалізації привидів на екрані гри.

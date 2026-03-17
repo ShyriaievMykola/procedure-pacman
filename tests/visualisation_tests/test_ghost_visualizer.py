@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import MagicMock
 from visualisation.ghost_visualizer import GhostVisualizer
 
+
 @pytest.fixture
 def mock_ghost_manager():
     manager = MagicMock()
@@ -16,10 +17,12 @@ def mock_ghost_manager():
     manager.ghosts = [ghost1, ghost2]
     return manager
 
+
 @pytest.fixture
 def ghost_viz(mock_ghost_manager):
     mock_vis = MagicMock()
     return GhostVisualizer(mock_vis, mock_ghost_manager)
+
 
 @pytest.mark.game_logic
 def test_save_positions(ghost_viz, mock_ghost_manager):
@@ -31,6 +34,7 @@ def test_save_positions(ghost_viz, mock_ghost_manager):
     ghost_viz.save_positions()
     
     assert ghost_viz.prev_pos[ghost] == [15.0, 12.0]
+
 
 @pytest.mark.math_logic
 def test_update_positions_interpolation(ghost_viz, mock_ghost_manager):
@@ -44,6 +48,7 @@ def test_update_positions_interpolation(ghost_viz, mock_ghost_manager):
     
     assert ghost_viz.render_pos[ghost][0] == 10.5
     assert ghost_viz.render_pos[ghost][1] == 10.0
+
 
 @pytest.mark.game_logic
 def test_update_positions_teleportation(ghost_viz, mock_ghost_manager):

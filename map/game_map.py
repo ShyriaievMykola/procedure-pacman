@@ -39,7 +39,12 @@ class GameMap:
         self.passage_left = passage_left
         self.passage_right = passage_right
 
-    def print_grid(self, pacman_position: tuple[int, int] = None, ghost_positions = None, points: int = 0, health: int = 3):
+    def print_grid(
+            self,
+            pacman_position: tuple[int, int] = None,
+            ghost_positions=None,
+            points: int = 0,
+            health: int = 3):
         """
         Друк карти у консольному вигляді
         Args:

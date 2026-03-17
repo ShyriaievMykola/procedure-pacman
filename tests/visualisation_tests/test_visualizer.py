@@ -4,12 +4,14 @@ import pygame
 
 from visualisation.visualizer import Visualizer
 
+
 @pytest.fixture
 def mock_screen():
     screen = MagicMock(spec=pygame.Surface)
     screen.get_width.return_value = 800
     screen.get_height.return_value = 600
     return screen
+
 
 @pytest.fixture
 def mock_map_gen():
@@ -19,6 +21,7 @@ def mock_map_gen():
     map_gen.ghost_x = (8, 11)
     map_gen.ghost_y = (6, 8)
     return map_gen
+
 
 @pytest.fixture
 def visualizer(mock_screen, mock_map_gen):

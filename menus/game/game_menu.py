@@ -4,6 +4,7 @@ import state
 from map.map_visualization import MapVisualization
 from typing import Tuple, Any
 
+
 class GameMenu:
     '''Меню гри'''
     def __init__(self):
@@ -33,7 +34,6 @@ class GameMenu:
             {'text': 'START GAME', 'pos': self.gmc.start_btn_pos, 'action': 'GET_DIFFICULTY'},
             {'text': 'BACK', 'pos': self.gmc.back_btn_pos, 'action': 'GO_BACK'}
         ]
-
 
     def draw(self) -> None:
         '''Відображення меню гри'''

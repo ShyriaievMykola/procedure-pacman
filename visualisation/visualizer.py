@@ -3,6 +3,7 @@ from .colors import Colors as C
 from .config import CameraConfig as CC, GraphicsConfig as GC
 from constants import WALL, PELLET, POWER, FRUIT
 
+
 class Visualizer:
     """
     Базовий клас для візуалізації гри Pac-Man на екрані.

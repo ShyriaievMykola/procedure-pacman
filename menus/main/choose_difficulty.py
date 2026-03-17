@@ -3,6 +3,7 @@ import pygame
 from menus.main.config import DifficultyConfig
 import state
 
+
 class DifficultyMenu:
     """
     Меню вибору складності гри
@@ -46,8 +47,8 @@ class DifficultyMenu:
         state.game_instance.screen.fill((0, 0, 0))
         mouse_pos = pygame.mouse.get_pos()
         for btn in self.buttons:
-            btn_color  = (255, 255, 0) if btn['rect'].collidepoint(mouse_pos) else (180, 180, 180)
-            pygame.draw.rect(state.game_instance.screen, (0,0,0), btn['rect'], border_radius=10)
+            btn_color = (255, 255, 0) if btn['rect'].collidepoint(mouse_pos) else (180, 180, 180)
+            pygame.draw.rect(state.game_instance.screen, (0, 0, 0), btn['rect'], border_radius=10)
             text = self.font.render(btn['text'], True, btn_color)
             state.game_instance.screen.blit(text, text.get_rect(center=btn['rect'].center))
 
