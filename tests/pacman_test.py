@@ -1,4 +1,5 @@
 import time
+import pytest
 import pacman
 from constants import TUNNEL, WALL, PELLET, POWER, FRUIT, EMPTY
 from map.game_map import GameMap
@@ -7,11 +8,12 @@ from ghosts.behaviors.frightened_behavior import FrightenedBehavior
 from ghosts.behaviors.eaten_behavior import EatenBehavior
 from ghosts.ghost_manager import GhostManager
 import visualisation.config
-
+from unittest.mock import patch
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def startfield():
     """
@@ -60,6 +62,7 @@ def startfield():
     ghost_manager.ghosts[2].old_position = (0, 1)
     ghost_manager.ghosts[3].position = (0, 0)
     ghost_manager.ghosts[3].old_position = (0, 0)
+    visualisation.config.state = visualisation.config.play_state.PLAYING
     return map, ghost_manager
 
 
@@ -83,7 +86,7 @@ def reset_pacman(pos=(0, 3)):
 # ---------------------------------------------------------------------------
 # get_spawn_position
 # ---------------------------------------------------------------------------
-
+@pytest.mark.pac_spawn
 class TestGetSpawnPosition:
     def test_returns_first_tunnel_with_pellet(self):
         map, _ = startfield()
@@ -101,34 +104,40 @@ class TestGetSpawnPosition:
 # ---------------------------------------------------------------------------
 # Movement – resolve_pend
 # ---------------------------------------------------------------------------
-
+@pytest.mark.pac_movement
 class TestMovement:
-    def setup_method(self):
-        self.map, self.gm = startfield()
+    @pytest.fixture
+    def game(self):
+        map, gm = startfield()
         reset_pacman(pos=(0, 3))
+        return map, gm
 
-    def test_moves_in_pending_direction_when_clear(self):
+    def test_moves_in_pending_direction_when_clear(self, game):
+        map, gm = game
         pacman.pending_direction = (1, 0)   # move right
-        pacman.resolve_pend(self.map, None)
+        pacman.resolve_pend(map, None)
         assert pacman.position == (1, 3)
 
-    def test_pending_becomes_movement_direction(self):
+    def test_pending_becomes_movement_direction(self, game):
+        map, gm = game
         pacman.pending_direction = (1, 0)
-        pacman.resolve_pend(self.map, None)
+        pacman.resolve_pend(map, None)
         assert pacman.movement_direction == (1, 0)
 
-    def test_falls_back_to_movement_direction_when_pending_blocked(self):
+    def test_falls_back_to_movement_direction_when_pending_blocked(self, game):
         # pacman at (0,1), pending=right -> (1,1) is WALL
         # movement=down -> (0,2) is TUNNEL -> should move there
+        map, gm = game
         pacman.position = (0, 1)
         pacman.old_position = (0, 1)
         pacman.pending_direction = (1, 0)   # right -> WALL at (1,1)
         pacman.movement_direction = (0, 1)   # down  -> TUNNEL at (0,2)
-        pacman.resolve_pend(self.map, None)
+        pacman.resolve_pend(map, None)
         assert pacman.position == (0, 2)
 
-    def test_stays_in_place_when_both_directions_blocked(self):
+    def test_stays_in_place_when_both_directions_blocked(self, game):
         # pacman at (0,1), pending=right->WALL, movement=(0,0)->no movement
+        map, gm = game
         pacman.position = (0, 1)
         pacman.old_position = (0, 1)
         pacman.pending_direction = (1, 0)   # right -> WALL at (1,1)
@@ -137,30 +146,33 @@ class TestMovement:
         # With (0,0) direction new pos == current pos 
         # which is TUNNEL, so pacman stays on same cell
         before = pacman.position
-        pacman.resolve_pend(self.map, None)
+        pacman.resolve_pend(map, None)
         assert pacman.position == before
 
-    def test_old_position_is_saved_before_move(self):
+    def test_old_position_is_saved_before_move(self, game):
+        map, gm = game
         pacman.position = (0, 3)
         pacman.old_position = (0, 3)
         pacman.pending_direction = (1, 0)
-        pacman.resolve_pend(self.map, None)
+        pacman.resolve_pend(map, None)
         assert pacman.old_position == (0, 3)
 
-    def test_cannot_move_into_wall(self):
+    def test_cannot_move_into_wall(self, game):
         # (0,1) -> right -> (1,1) is WALL, no current direction -> stays
+        map, gm = game
         pacman.position = (0, 1)
         pacman.old_position = (0, 1)
         pacman.pending_direction = (1, 0)
         pacman.movement_direction = (0, 0)
-        pacman.resolve_pend(self.map, None)
+        pacman.resolve_pend(map, None)
         assert pacman.position == (0, 1)
 
-    def test_position_clamped_to_map_bounds(self):
+    def test_position_clamped_to_map_bounds(self, game):
+        map, gm = game
         pacman.position = (0, 0)
         pacman.old_position = (0, 0)
         pacman.pending_direction = (-1, 0)   # would go out of bounds left
-        pacman.resolve_pend(self.map, None)
+        pacman.resolve_pend(map, None)
         assert pacman.position[0] >= 0
         assert pacman.position[1] >= 0
 
@@ -168,212 +180,258 @@ class TestMovement:
 # ---------------------------------------------------------------------------
 # Eating – pellets, power pellets, fruits
 # ---------------------------------------------------------------------------
-
+@pytest.mark.pac_eating
 class TestEating:
-    def setup_method(self):
-        self.map, self.gm = startfield()
+    @pytest.fixture
+    def game(self):
+        map, gm = startfield()
         reset_pacman(pos=(0, 3))
+        return map, gm
 
-    def test_eat_pellet_increases_points(self):
+    def test_eat_pellet_increases_points(self, game):
+        map, gm = game
         pacman.position = (1, 0)
-        pacman.eat((1, 0), self.map, None)
+        pacman.eat((1, 0), map, None)
         assert pacman.points == 1
 
-    def test_eat_pellet_empties_cell(self):
+    def test_eat_pellet_empties_cell(self, game):
+        map, gm = game
         pacman.position = (1, 0)
-        pacman.eat((1, 0), self.map, None)
-        assert self.map.pellet_grid[0][1] == EMPTY
+        pacman.eat((1, 0), map, None)
+        assert map.pellet_grid[0][1] == EMPTY
 
-    def test_eat_fruit_increases_points_by_fruit_value(self):
+    def test_eat_fruit_increases_points_by_fruit_value(self, game):
+        map, gm = game
         pacman.position = (2, 0)
-        pacman.eat((2, 0), self.map, None)
+        pacman.eat((2, 0), map, None)
         assert pacman.points == pacman.fruit_value
 
-    def test_eat_fruit_empties_cell(self):
+    def test_eat_fruit_empties_cell(self, game):
+        map, gm = game
         pacman.position = (2, 0)
-        pacman.eat((2, 0), self.map, None)
-        assert self.map.pellet_grid[0][2] == EMPTY
+        pacman.eat((2, 0), map, None)
+        assert map.pellet_grid[0][2] == EMPTY
 
-    def test_eat_power_pellet_enables_empowered(self):
+    def test_eat_power_pellet_enables_empowered(self, game):
+        map, gm = game
         pacman.position = (2, 1)
-        pacman.eat((2, 1), self.map, None)
+        pacman.eat((2, 1), map, None)
         assert pacman.empowered is True
 
-    def test_eat_power_pellet_sets_last_power_time(self):
+    def test_eat_power_pellet_sets_last_power_time(self, game):
+        map, gm = game
         before = time.time()
         pacman.position = (2, 1)
-        pacman.eat((2, 1), self.map, None)
+        pacman.eat((2, 1), map, None)
         assert pacman.last_power_time >= before
 
-    def test_eat_power_pellet_empties_cell(self):
+    def test_eat_power_pellet_empties_cell(self, game):
+        map, gm = game
         pacman.position = (2, 1)
-        pacman.eat((2, 1), self.map, None)
-        assert self.map.pellet_grid[1][2] == EMPTY
+        pacman.eat((2, 1), map, None)
+        assert map.pellet_grid[1][2] == EMPTY
 
-    def test_eating_last_pellet_triggers_victory(self):
+    def test_eating_last_pellet_triggers_victory(self, game):
+        map, gm = game
         # Clear all pellets except one
-        for y in range(self.map.height):
-            for x in range(self.map.width):
-                self.map.pellet_grid[y][x] = EMPTY
-        self.map.pellet_grid[0][1] = PELLET
+        for y in range(map.height):
+            for x in range(map.width):
+                map.pellet_grid[y][x] = EMPTY
+        map.pellet_grid[0][1] = PELLET
         pacman.position = (1, 0)
-        pacman.eat((1, 0), self.map, None)
+        pacman.eat((1, 0), map, None)
         assert visualisation.config.state == visualisation.config.play_state.VICTORY
 
-    def test_empty_cell_does_nothing_to_points(self):
+    def test_empty_cell_does_nothing_to_points(self, game):
+        map, gm = game
         pacman.position = (0, 0)
-        pacman.eat((0, 0), self.map, None)
+        pacman.eat((0, 0), map, None)
         assert pacman.points == 0
 
 
+@pytest.mark.pac_tunnels
 class TestTunnels:
-    def setup_method(self):
-        self.map, self.gm = startfield()
-        self.map.passage_left = (0, 2)
-        self.map.passage_right = (3, 2)
+    @pytest.fixture
+    def game(self):
+        map, gm = startfield()
+        map.passage_left = (0, 2)
+        map.passage_right = (3, 2)
         reset_pacman(pos=(0, 2))
+        return map, gm
 
-    def test_left_passage_teleports_to_right(self):
-        pacman.position = (0, 2)
-        pacman.go_through_passage_left(self.map)
-        assert pacman.position == self.map.passage_right
+    @pytest.mark.parametrize("func, start, end", [
+        (lambda m, p: p.go_through_passage_left(m), (0, 2), (3, 2)),   # left passage -> right passage
+        (lambda m, p: p.go_through_passage_right(m), (3, 2), (0, 2)),   # right passage -> left
+    ])
+    def test_passage(self, game, func, start, end):
+        map, gm = game
+        pacman.position = start
+        func(map, pacman)
+        assert pacman.position == end
 
-    def test_right_passage_teleports_to_left(self):
-        pacman.position = (3, 2)
-        pacman.go_through_passage_right(self.map)
-        assert pacman.position == self.map.passage_left
-
-    def test_eat_dispatches_left_passage(self):
-        pacman.position = (0, 2)
-        pacman.eat((0, 2), self.map, None)
-        assert pacman.position == self.map.passage_right
-
-    def test_eat_dispatches_right_passage(self):
-        pacman.position = (3, 2)
-        pacman.eat((3, 2), self.map, None)
-        assert pacman.position == self.map.passage_left
+    @pytest.mark.parametrize("func, start, end", [
+        (lambda m, p: p.go_through_passage_left(m), (0, 2), (3, 2)),   # left passage -> right passage
+        (lambda m, p: p.go_through_passage_right(m), (3, 2), (0, 2)),   # right passage -> left
+    ])
+    def test_eat_dispatches(self, game, func, start, end):
+        map, gm = game
+        pacman.position = start
+        pacman.eat(start, map, None)
+        assert pacman.position == end
 
 
+@pytest.mark.pac_ghosts
 class TestGhostInteraction:
-    def setup_method(self):
-        self.map, self.gm = startfield()
+    @pytest.fixture
+    def game(self):
+        map, gm = startfield()
         reset_pacman(pos=(0, 3))
+        return map, gm
 
-    def _frighten_all(self):
-        for g in self.gm.ghosts:
-            g.strategy = FrightenedBehavior(g, self.map.width, self.map.height)
+    def _frighten_all(self, game):
+        map, gm = game
+        for g in gm.ghosts:
+            g.strategy = FrightenedBehavior(g, map.width, map.height)
 
-    def test_touch_ghost_loses_health_when_not_empowered(self):
-        ghost = self.gm.ghosts[0]
-        ghost.strategy = ScatterBehavior("red", self.map.width, self.map.height)
-        pacman.touch_ghost(self.gm, ghost)
-        assert pacman.health == pacman.max_health - 1
+    @pytest.mark.parametrize("strategy", [
+        lambda g: FrightenedBehavior(g, 4, 4),
+        lambda g: ScatterBehavior("red", 4, 4),
+        lambda g: EatenBehavior(g, 4, 4, (2, 2))
+    ])
+    def test_touch_ghost_loses_health_when_not_empowered(self, game, strategy):
+        map, gm = game
+        ghost = gm.ghosts[0]
+        ghost.strategy = strategy(ghost)
+        pacman.touch_ghost(gm, ghost)
+        if isinstance(ghost.strategy, FrightenedBehavior) or isinstance(ghost.strategy, EatenBehavior):
+            # Frightened or eaten ghosts are edible, so no health loss
+            assert pacman.health == pacman.max_health
+        else:
+            # Non-frightened ghosts cause health loss
+            assert pacman.health == pacman.max_health - 1
 
-    def test_touch_ghost_triggers_game_over_on_last_life(self):
+    @pytest.mark.parametrize("strategy", [
+        lambda g: FrightenedBehavior(g, 4, 4),
+        lambda g: ScatterBehavior("red", 4, 4),
+        lambda g: EatenBehavior(g, 4, 4, (2, 2))
+    ])
+    def test_touch_ghost_triggers_game_over_on_last_life(self, game, strategy):
+        map, gm = game
         pacman.health = 1
-        ghost = self.gm.ghosts[0]
-        ghost.strategy = ScatterBehavior("red", self.map.width, self.map.height)
-        pacman.touch_ghost(self.gm, ghost)
-        assert visualisation.config.state == visualisation.config.play_state.GAME_OVER
+        ghost = gm.ghosts[0]
+        ghost.strategy = strategy(ghost)
+        pacman.touch_ghost(gm, ghost)
+        if isinstance(ghost.strategy, FrightenedBehavior) or isinstance(ghost.strategy, EatenBehavior):
+            # Frightened or eaten ghosts are edible, so no game over
+            assert visualisation.config.state != visualisation.config.play_state.GAME_OVER
+        else:
+            assert visualisation.config.state == visualisation.config.play_state.GAME_OVER
 
-    def test_touch_ghost_no_game_over_if_health_remains(self):
+    @pytest.mark.parametrize("strategy", [
+        lambda g: FrightenedBehavior(g, 4, 4),
+        lambda g: ScatterBehavior("red", 4, 4),
+        lambda g: EatenBehavior(g, 4, 4, (2, 2))
+    ])
+    def test_touch_ghost_no_game_over_if_health_remains(self, game, strategy):
+        map, gm = game
         pacman.health = 2
-        ghost = self.gm.ghosts[0]
-        ghost.strategy = ScatterBehavior("red", self.map.width, self.map.height)
-        pacman.touch_ghost(self.gm, ghost)
+        ghost = gm.ghosts[0]
+        ghost.strategy = strategy(ghost)
+        pacman.touch_ghost(gm, ghost)
         assert visualisation.config.state != visualisation.config.play_state.GAME_OVER
 
-    def test_eat_ghost_when_empowered_and_frightened(self):
+    def test_eat_ghost_when_empowered_and_frightened(self, game):
+        map, gm = game
         pacman.empowered = True
-        self._frighten_all()
-        ghost = self.gm.ghosts[0]
-        pacman.touch_ghost(self.gm, ghost)
+        self._frighten_all(game)
+        ghost = gm.ghosts[0]
+        pacman.touch_ghost(gm, ghost)
         assert pacman.points == pacman.starting_points_for_ghost
-
-    def test_eat_ghost_does_not_reduce_health(self):
-        pacman.empowered = True
-        self._frighten_all()
-        pacman.touch_ghost(self.gm, self.gm.ghosts[0])
+        assert ghost.strategy.__class__ == EatenBehavior
         assert pacman.health == pacman.max_health
 
-    def test_ghost_score_doubles_per_chain(self):
+    def test_ghost_score_doubles_per_chain(self, game):
+        map, gm = game
         pacman.empowered = True
-        self._frighten_all()
-        pacman.touch_ghost(self.gm, self.gm.ghosts[0])   # 200
-        self._frighten_all()
-        pacman.touch_ghost(self.gm, self.gm.ghosts[1])   # 400
+        self._frighten_all(game)
+        pacman.touch_ghost(gm, gm.ghosts[0])   # 200
+        assert pacman.points == 200
+        self._frighten_all(game)
+        pacman.touch_ghost(gm, gm.ghosts[1])   # 400
         assert pacman.points == 200 + 400
-
-    def test_ghost_score_quadruples_on_third(self):
-        pacman.empowered = True
-        self._frighten_all()
-        pacman.touch_ghost(self.gm, self.gm.ghosts[0])   # 200
-        self._frighten_all()
-        pacman.touch_ghost(self.gm, self.gm.ghosts[1])   # 400
-        self._frighten_all()
-        pacman.touch_ghost(self.gm, self.gm.ghosts[2])   # 800
+        self._frighten_all(game)
+        pacman.touch_ghost(gm, gm.ghosts[2])   # 800
         assert pacman.points == 200 + 400 + 800
 
-    def test_does_touch_ghost_same_cell(self):
+    def test_does_touch_ghost_same_cell(self, game):
+        map, gm = game
         pacman.position = (1, 2)
         pacman.old_position = (0, 2)
-        ghost = self.gm.ghosts[0]   # position = (1,2)
+        ghost = gm.ghosts[0]   # position = (1,2)
         assert pacman.does_touch_ghost(ghost) is True
 
-    def test_does_touch_ghost_swap(self):
+    def test_does_touch_ghost_swap(self, game):
+        map, gm = game
         # Pac moves (0,2)->(1,2), ghost moves (1,2)->(0,2) — they swapped cells
         pacman.position = (1, 2)
         pacman.old_position = (0, 2)
-        ghost = self.gm.ghosts[0]
+        ghost = gm.ghosts[0]
         ghost.position = (0, 2)
         ghost.old_position = (1, 2)
         assert pacman.does_touch_ghost(ghost) is True
 
-    def test_does_touch_ghost_no_contact(self):
+    def test_does_touch_ghost_no_contact(self, game):
+        map, gm = game
         pacman.position = (3, 3)
         pacman.old_position = (3, 2)
-        ghost = self.gm.ghosts[0]   # at (1,2)
+        ghost = gm.ghosts[0]   # at (1,2)
         assert pacman.does_touch_ghost(ghost) is False
 
-    def test_get_touched_ghost_returns_all_touching(self):
+    def test_get_touched_ghost_returns_all_touching(self, game):
+        map, gm = game
         pacman.position = (1, 2)
         pacman.old_position = (1, 2)
-        touching = pacman.get_touched_ghost(pacman.position, self.gm)
+        touching = pacman.get_touched_ghost(pacman.position, gm)
         positions = [g.position for g in touching]
         assert (1, 2) in positions
 
-    def test_eaten_ghost_does_not_damage_pacman(self):
-        ghost = self.gm.ghosts[0]
-        ghost.strategy = EatenBehavior(ghost, self.map.width, self.map.height, self.map.ghost_door)
-        pacman.touch_ghost(self.gm, ghost)
+    def test_eaten_ghost_does_not_damage_pacman(self, game):
+        map, gm = game
+        ghost = gm.ghosts[0]
+        ghost.strategy = EatenBehavior(ghost, map.width, map.height, map.ghost_door)
+        pacman.touch_ghost(gm, ghost)
         assert pacman.health == pacman.max_health
 
 
+@pytest.mark.pac_timers
 class TestPowerTimer:
     def setup_method(self):
-        self.map, self.gm = startfield()
         reset_pacman()
 
     def test_empowered_turns_off_after_power_span(self):
         pacman.empowered = True
         pacman.last_power_time = time.time() - pacman.power_span - 0.1
-        pacman.maybe_lose_power()
+        with patch('time.time', return_value=pacman.last_power_time + pacman.power_span + 0.1):
+            pacman.maybe_lose_power()
         assert pacman.empowered is False
 
     def test_points_for_ghost_reset_after_power_expires(self):
         pacman.empowered = True
         pacman.points_for_ghost = 1600
-        pacman.last_power_time = time.time() - pacman.power_span - 0.1
-        pacman.maybe_lose_power()
+        pacman.last_power_time = time.time()
+        with patch('time.time', return_value=pacman.last_power_time + pacman.power_span + 0.1):
+            pacman.maybe_lose_power()
         assert pacman.points_for_ghost == pacman.starting_points_for_ghost
 
     def test_still_empowered_within_span(self):
         pacman.empowered = True
         pacman.last_power_time = time.time()
-        pacman.maybe_lose_power()
+        with patch('time.time', return_value=pacman.last_power_time + pacman.power_span - 0.1):
+            pacman.maybe_lose_power()
         assert pacman.empowered is True
 
 
+@pytest.mark.pac_state
 class TestGameState:
     def setup_method(self):
         reset_pacman()

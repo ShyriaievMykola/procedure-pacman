@@ -198,7 +198,7 @@ def touch_ghost(ghost_manager: GhostManager, ghost: Ghost):
     global health, invincible, invincible_start_time
     if empowered and ghost.is_frightened():
         eat_ghost(ghost_manager, ghost)
-    elif not invincible and not ghost.is_eaten():
+    elif not invincible and not ghost.is_eaten() and not ghost.is_frightened():
         health -= 1
         if health <= 0:
             game_over()
