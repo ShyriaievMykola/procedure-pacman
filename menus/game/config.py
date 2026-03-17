@@ -1,5 +1,6 @@
-import state, pygame
-from typing import Tuple, Any
+import pygame
+from typing import Tuple
+
 
 class GameMenuConfig():
     '''Конфігурація меню гри'''
@@ -7,7 +8,8 @@ class GameMenuConfig():
 
         # default values
         screen_width: int = pygame.display.get_surface().get_width()
-        screen_height: int = pygame.display.get_surface().get_height()
+        # Закоментовано, оскільки не використовується
+        # screen_height: int = pygame.display.get_surface().get_height()
 
         self.button_size: Tuple[int, int] = (220, 60)
         self.input_seed_size: Tuple[int, int] = (300, 50)

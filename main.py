@@ -1,15 +1,12 @@
 import argparse
-from typing import Optional, Tuple, Any
+from typing import Tuple, Any
 from map.map_generator import MapGenerator
 from map.map_visualization import MapVisualization
 from game_manager import GameManager
-from seeded_random import SeededRandom
-from visualisation.visualizer import Visualizer
-from visualisation.pacman_visualizer import PacManVisualizer
-from constants import *
 import sys
 import pygame
 import state
+
 
 def main() -> None:
     """
@@ -43,6 +40,7 @@ def main() -> None:
         GameManager()
         state.game_instance.run()
 
+
 def parse_arguments() -> argparse.Namespace:
     """
     Парсить аргументи командного рядка для налаштування запуску.
@@ -51,10 +49,11 @@ def parse_arguments() -> argparse.Namespace:
         argparse.Namespace: Об'єкт із розпарсеними прапорцями (--test-map, --seed тощо).
     """    
     parser = argparse.ArgumentParser(description="Procedural Pac-Man Maze Generator")
-    parser.add_argument('--test-map',action='store_true', help='Test map generation')
-    parser.add_argument('--test-texture-map',action='store_true', help='Test texture map')
+    parser.add_argument('--test-map', action='store_true', help='Test map generation')
+    parser.add_argument('--test-texture-map', action='store_true', help='Test texture map')
     parser.add_argument('--seed', type=int, help='Set seed')
     return parser.parse_args()
+
 
 def get_map(seed: int | None = None) -> Any:
     """
@@ -71,6 +70,7 @@ def get_map(seed: int | None = None) -> Any:
     seed = seed
 
     return MapGenerator.generate_map(grid_width, grid_height, seed)
+
 
 def test_map_generation(screen: pygame.Surface, size: Tuple[int, int], offset: Tuple[int, int], map: Any) -> None:
     """
@@ -96,6 +96,7 @@ def test_map_generation(screen: pygame.Surface, size: Tuple[int, int], offset: T
     
     pygame.quit()
 
+
 def test_texture_map(map: Any) -> None:
     """
     Виводить текстове представлення текстурної мапи в консоль.
@@ -115,6 +116,7 @@ def test_texture_map(map: Any) -> None:
                 row += f"{texture_map[y][x]} "
 
         print(row)
+
 
 if __name__ == "__main__":
     main()

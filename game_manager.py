@@ -9,7 +9,6 @@ import random
 import state
 from map.map_generator import MapGenerator
 from visualisation.pacman_visualizer import PacManVisualizer
-from visualisation.visualizer import Visualizer
 from difficulty_manager import DifficultyManager
 from visualisation.config import DifficultyConfig
 import pacman
@@ -39,7 +38,6 @@ class GameManager:
         self.debounce_delay = 300
         self.needs_regeneration = False
 
-        
         self.state = 'MENU'
 
         self.main_menu = MainMenu()
@@ -51,8 +49,6 @@ class GameManager:
         self.dif_manager = DifficultyManager(self.dif_config)
         self.dif_menu = DifficultyMenu()
         self.dif_manager.set_hard()
-
-
 
     def run(self):
         """
@@ -182,4 +178,3 @@ class GameManager:
             self.victory_menu.draw()
             
         pygame.display.flip()
-

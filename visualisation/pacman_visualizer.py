@@ -1,16 +1,14 @@
 import pygame
-import sys
 import math
 import pacman
 import state
 from .visualizer import Visualizer
 from .colors import Colors as C
-from .config import CameraConfig as CC, GraphicsConfig as GC, GameConfig as G, play_state
+from .config import GraphicsConfig as GC, GameConfig as G, play_state
 import visualisation.config
-from constants import WALL, TUNNEL
+from constants import TUNNEL
 from ghosts.ghost_manager import GhostManager
 from .ghost_visualizer import GhostVisualizer
-from ghosts.behaviors.eaten_behavior import EatenBehavior
 
 
 class PacManVisualizer(Visualizer):
@@ -156,7 +154,7 @@ class PacManVisualizer(Visualizer):
         if pacman.health < self.prev_health:
             # Втрата життя — запускаємо анімацію на поточній позиції
             if pacman.health > 0:
-                    # Нефінальна втрата життя: відтворити анімацію смерті, потім скинути на фіксований спавн
+                # Нефінальна втрата життя: відтворити анімацію смерті, потім скинути на фіксований спавн
                 self.death_anim_playing = True
                 self.death_anim_time = 0
                 self.death_anim_game_over = False
