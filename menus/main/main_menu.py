@@ -2,6 +2,7 @@ import pygame
 from menus.main.config import MainMenuConfig
 import state
 
+
 class MainMenu:
     """
     Головне меню гри
@@ -41,7 +42,8 @@ class MainMenu:
         state.game_instance.screen.fill((0, 0, 0))
         
         screen_width = state.game_instance.screen.get_width()
-        screen_height = state.game_instance.screen.get_height()
+        # Закоментовано, оскільки не використовується
+        # screen_height = state.game_instance.screen.get_height()
         
         # Малюємо заголовок PACMAN
         title_text = self.title_font.render("PACMAN", True, (255, 255, 0))

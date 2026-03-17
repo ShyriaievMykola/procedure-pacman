@@ -1,6 +1,7 @@
 import pygame
 import state
-from typing import Tuple, Any
+from typing import Tuple
+
 
 class VictoryMenu:
     '''Меню перемоги'''

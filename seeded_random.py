@@ -1,9 +1,11 @@
 import random
 
+
 class SeededRandom:
-    '''
+
+    """
     Клас для генерації випадкових чисел з фіксованим сідом.
-    '''
+    """
     def __init__(self, seed: int):
         self.seed: int = seed
         self.srand: random.Random = random.Random(seed)
