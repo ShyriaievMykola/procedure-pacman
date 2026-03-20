@@ -47,7 +47,6 @@ def test_randchance_zero_boundary(monkeypatch):
 def test_randchance_hundred_boundary(monkeypatch):
     sr = SeededRandom(1)
 
-    # Для 100% шансу навіть найбільше значення з randint(0,100) має проходити.
     monkeypatch.setattr(sr.srand, "randint", lambda _a, _b: 100)
     assert sr.randchance(100) is True
 
